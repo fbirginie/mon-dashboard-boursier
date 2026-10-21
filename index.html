@@ -25,7 +25,7 @@
 </aside>
 <main class="main">
   <section id="dashboard" class="section active">
-    <div class="top"><div><div class="eyebrow">MARDI 20 OCTOBRE 2026 · ESPACE PERSONNEL</div><h1 class="h1">Vue d'ensemble</h1><div class="sub">Un regard clair sur tes investissements.</div></div><div class="actions"><select class="select" id="accountFilter" aria-label="Filtrer le compte"><option value="all">Tous les comptes</option><option value="PEA">PEA</option><option value="CTO">CTO</option><option value="SCPI">SCPI</option></select><button class="btn" id="exportBtn">↧ Exporter CSV</button><button class="btn primary" id="addBtn">＋ Ajouter une opération</button></div></div>
+    <div class="top"><div><div class="eyebrow">MARDI 20 OCTOBRE 2026 · ESPACE PERSONNEL</div><h1 class="h1">Vue d'ensemble</h1><div class="sub">Un regard clair sur tes investissements.</div></div><div class="actions"><select class="select" id="accountFilter" aria-label="Filtrer le compte"><option value="all">Tous les comptes</option><option value="PEA">PEA</option><option value="CTO">CTO</option><option value="SCPI">SCPI</option></select><button class="btn" id="exportBtn">↧ Exporter CSV</button><button class="btn" id="importBtn">↥ Importer CSV</button><input id="importFile" type="file" accept=".csv,text/csv" hidden><button class="btn primary" id="addBtn">＋ Ajouter une opération</button></div></div>
     <div class="grid metrics">
       <div class="card"><div class="metric-top"><span>Valeur du portefeuille</span><span class="metric-icon">◈</span></div><div class="value" id="totalValue">0,00 €</div><div class="foot" id="valueFoot">Selon les derniers cours saisis</div></div>
       <div class="card"><div class="metric-top"><span>Montant investi net</span><span class="metric-icon">↗</span></div><div class="value" id="investedValue">0,00 €</div><div class="foot">Achats moins ventes de titres</div></div>
@@ -201,6 +201,24 @@ function render(){
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400)}
 function openModal(){ $('modalBack').classList.add('open');$('date').value=new Date().toISOString().slice(0,10);$('ticker').focus()}
 function closeModal(){$('modalBack').classList.remove('open')}
+function parseCSV(text){
+ const rows=[];let row=[],field='',quoted=false;
+ text=text.replace(/^\uFEFF/,'');
+ for(let i=0;i<text.length;i++){const c=text[i];if(quoted){if(c==='"'&&text[i+1]==='"'){field+='"';i++}else if(c==='"')quoted=false;else field+=c;}else{if(c==='"')quoted=true;else if(c===';'){row.push(field);field='';}else if(c==='\n'){row.push(field.replace(/\r$/,''));rows.push(row);row=[];field='';}else field+=c;}}
+ if(field.length||row.length){row.push(field.replace(/\r$/,''));rows.push(row);}return rows.filter(r=>r.some(v=>String(v).trim()!==''));
+}
+function importCSVFile(file){
+ const reader=new FileReader();reader.onload=()=>{try{
+  const rows=parseCSV(String(reader.result||''));if(rows.length<2)throw new Error('Le fichier ne contient aucune opération.');
+  const headers=rows.shift().map(h=>h.trim().toLowerCase());const idx=name=>headers.indexOf(name);
+  const required=['date','type','compte','ticker','nom','type_actif','quantite','prix_unitaire_eur','frais_eur'];
+  if(required.some(h=>idx(h)<0))throw new Error('Ce CSV ne correspond pas à l’export du tableau de bord.');
+  const imported=rows.map((r,i)=>({id:(crypto.randomUUID?crypto.randomUUID():String(Date.now())+i+Math.random()),created:Date.now()+i,date:r[idx('date')]||'',type:r[idx('type')]||'Achat',account:r[idx('compte')]||'CTO',ticker:(r[idx('ticker')]||'').trim().toUpperCase(),name:r[idx('nom')]||r[idx('ticker')]||'',kind:r[idx('type_actif')]||'Action',qty:Number(String(r[idx('quantite')]||'0').replace(',','.')),price:Number(String(r[idx('prix_unitaire_eur')]||'0').replace(',','.')),fees:Number(String(r[idx('frais_eur')]||'0').replace(',','.')),notes:idx('note')>=0?(r[idx('note')]||''):''})).filter(o=>o.ticker&&o.name&&o.date&&Number.isFinite(o.qty)&&Number.isFinite(o.price)&&Number.isFinite(o.fees));
+  if(!imported.length)throw new Error('Aucune ligne valide trouvée dans le CSV.');
+  if(!confirm(`${imported.length} opération(s) trouvée(s). L’import remplacera les opérations actuellement présentes dans ce tableau de bord. As-tu exporté une sauvegarde si nécessaire ?`))return;
+  ops=imported;const ok=save();render();toast(ok?`${imported.length} opération(s) importée(s).`:'Import effectué en mémoire seulement : exporte immédiatement une sauvegarde.');
+ }catch(err){alert('Import impossible : '+(err.message||'fichier invalide'));}};reader.readAsText(file,'UTF-8');
+}
 function exportCSV(){
  const headers=['date','type','compte','ticker','nom','type_actif','quantite','prix_unitaire_eur','frais_eur','note'];
  const rows=ops.map(o=>headers.map(h=>String(({date:o.date,type:o.type,compte:o.account,ticker:o.ticker,nom:o.name,type_actif:o.kind,quantite:o.qty,prix_unitaire_eur:o.price,frais_eur:o.fees,note:o.notes})[h]??'').replace(/"/g,'""')));
@@ -213,6 +231,7 @@ document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',(
 $('addScpiBtn').addEventListener('click',()=>{openModal();$('kind').value='SCPI';$('account').value='SCPI';$('ticker').focus()});
 $('scpiSearch').addEventListener('input',render);
 ['exportBtn','exportBtn2','exportBtn3'].forEach(id=>$(id).addEventListener('click',exportCSV));
+$('importBtn').addEventListener('click',()=> $('importFile').click());$('importFile').addEventListener('change',e=>{if(e.target.files&&e.target.files[0])importCSVFile(e.target.files[0]);e.target.value='';});
 $('cancelBtn').addEventListener('click',closeModal);$('modalBack').addEventListener('click',e=>{if(e.target===$('modalBack'))closeModal()});
 $('type').addEventListener('change',()=>{const t=$('type').value;if((t==='Dividende'||t==='Mise à jour du cours')&&!$('qty').value)$('qty').value='1';const hints={Dividende:'Indique le montant du dividende dans « Prix unitaire » et laisse la quantité à 1.', 'Mise à jour du cours':'Saisis le dernier cours connu. La quantité n’affecte pas le calcul pour ce type.', Achat:'Pour un achat, saisis la quantité et le prix unitaire. Les frais sont inclus dans le coût.', Vente:'Pour une vente, saisis la quantité et le prix unitaire. La quantité vendue ne peut pas dépasser celle détenue.', Frais:'Saisis l’actif concerné et le montant des frais dans « Prix unitaire ».',};$('formHint').textContent=hints[t]||'Vérifie les champs obligatoires.'});
 $('opForm').addEventListener('submit',e=>{
