@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Patrimoine — Dashboard boursier</title>
+<style>
+:root{--bg:#f5f7fb;--panel:#fff;--text:#172033;--muted:#748097;--line:#e7ebf2;--blue:#4263eb;--blue2:#eef2ff;--green:#14966b;--red:#d94b64;--nav:#121a2b;--shadow:0 8px 30px rgba(22,34,59,.05)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text)}button,input,select{font:inherit}button{cursor:pointer}.app{display:grid;grid-template-columns:238px 1fr;min-height:100vh}.sidebar{background:var(--nav);color:#fff;padding:26px 16px;display:flex;flex-direction:column;gap:28px}.brand{display:flex;align-items:center;gap:11px;padding:0 10px;font-weight:750;font-size:18px;letter-spacing:-.4px}.logo{height:34px;width:34px;border-radius:11px;background:#6179ff;display:grid;place-items:center;font-size:19px}.navlabel{color:#7f8ba4;font-size:10px;letter-spacing:1.5px;font-weight:700;padding:0 12px;margin-bottom:7px}.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;color:#aeb8ca;text-align:left;padding:12px;border-radius:10px;display:flex;gap:12px;align-items:center;font-size:13px}.nav button.active,.nav button:hover{background:#273149;color:white}.nav .ico{width:19px;text-align:center;font-size:16px}.sidefoot{margin-top:auto;border:1px solid #303b50;border-radius:13px;padding:14px;color:#b6c0d1;font-size:12px;line-height:1.6}.main{padding:30px clamp(18px,3vw,42px);min-width:0;max-width:1600px;width:100%;margin:auto}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:28px}.eyebrow{font-size:12px;color:var(--muted);margin-bottom:7px}.h1{font-size:27px;letter-spacing:-.8px;font-weight:750;margin:0}.sub{color:var(--muted);font-size:13px;margin-top:7px}.actions{display:flex;gap:9px;align-items:center}.select,.btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:10px;padding:10px 13px;font-size:12px;font-weight:650}.btn.primary{background:var(--blue);color:#fff;border-color:var(--blue)}.btn:hover{filter:brightness(.98)}.grid{display:grid;gap:16px}.metrics{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:17px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:19px;box-shadow:var(--shadow);min-width:0}.metric-top{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--muted);font-size:12px}.metric-icon{height:31px;width:31px;border-radius:9px;display:grid;place-items:center;background:#f0f3fa;color:#53627d}.value{font-size:25px;letter-spacing:-.7px;font-weight:760;margin:13px 0 8px;white-space:nowrap}.foot{font-size:11px;color:var(--muted)}.positive{color:var(--green)!important}.negative{color:var(--red)!important}.pill{display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:5px 8px;font-size:10px;font-weight:700;background:#e9f8f1;color:var(--green)}.pill.neutral{background:#f0f2f7;color:#647089}.main-grid{grid-template-columns:minmax(0,1.65fr) minmax(280px,1fr);margin-bottom:17px}.card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:17px}.card-title{font-weight:750;font-size:14px}.card-sub{font-size:11px;color:var(--muted);margin-top:5px}.range{display:flex;background:#f3f5f9;border-radius:8px;padding:3px;gap:2px}.range button{border:0;background:transparent;color:var(--muted);font-size:10px;padding:6px 8px;border-radius:6px}.range button.active{background:white;color:var(--text);box-shadow:0 1px 4px #dfe3eb}.chartbox{height:205px;position:relative}.chartbox svg{width:100%;height:100%;overflow:visible}.chart-labels{display:flex;justify-content:space-between;color:#9aa4b6;font-size:10px;margin-top:5px}.legend{display:flex;gap:15px;font-size:10px;color:var(--muted);margin-top:14px}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}.allocation{display:grid;grid-template-columns:140px 1fr;align-items:center;gap:18px;padding:8px 0 5px}.donut{width:138px;height:138px;position:relative}.donut svg{width:100%;height:100%;transform:rotate(-90deg)}.donut-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}.donut-center strong{font-size:18px}.donut-center span{font-size:10px;color:var(--muted);margin-top:4px}.alloc-legend{display:grid;gap:14px}.alloc-row{display:grid;grid-template-columns:9px 1fr auto;align-items:center;gap:8px;font-size:11px}.alloc-row .name{color:#66728a}.alloc-row strong{font-size:11px}.swatch{width:8px;height:8px;border-radius:3px}.table-card{padding:0;overflow:hidden}.table-card .card-head{padding:20px 20px 0}.table-tools{display:flex;gap:8px}.search{border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:160px;font-size:11px;outline:none}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;white-space:nowrap}th{text-align:left;color:#8993a6;font-weight:650;font-size:10px;padding:13px 20px;background:#fafbfe;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}td{padding:14px 20px;border-bottom:1px solid #edf0f5;font-size:11px}tr:last-child td{border-bottom:0}.asset{display:flex;align-items:center;gap:10px}.ticker{height:33px;width:33px;border-radius:10px;background:#edf1ff;color:#3f5bd6;display:grid;place-items:center;font-size:10px;font-weight:800}.asset-name{font-size:11px;font-weight:750}.asset-sub{font-size:10px;color:var(--muted);margin-top:4px}.account-tag{font-size:9px;background:#f1f3f8;color:#66728a;padding:4px 7px;border-radius:6px}.bottom-grid{grid-template-columns:1.1fr .9fr}.activity{display:grid;gap:0}.activity-row{display:flex;align-items:center;gap:11px;padding:12px 0;border-bottom:1px solid #edf0f5}.activity-row:last-child{border-bottom:0}.activity-icon{width:33px;height:33px;border-radius:10px;background:#eef2ff;display:grid;place-items:center;color:var(--blue)}.activity-main{flex:1;min-width:0}.activity-main strong{font-size:11px;display:block}.activity-main span{font-size:10px;color:var(--muted);display:block;margin-top:4px}.activity-amount{text-align:right;font-weight:750;font-size:11px}.empty{padding:25px;text-align:center;color:var(--muted);font-size:12px}.section{display:none}.section.active{display:block}.notice{font-size:11px;color:#778299;background:#f0f3fa;border-radius:9px;padding:11px 13px;line-height:1.5;margin-top:14px}.modal-back{display:none;position:fixed;inset:0;background:#11182788;z-index:5;align-items:center;justify-content:center;padding:16px}.modal-back.open{display:flex}.modal{width:min(520px,100%);background:#fff;border-radius:18px;padding:24px;box-shadow:0 24px 80px #0003;max-height:90vh;overflow:auto}.modal h2{font-size:19px;margin:0 0 6px}.modal p{font-size:12px;color:var(--muted);margin:0 0 20px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:11px;font-weight:700;color:#65718a}.field input,.field select{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;background:white;outline:none;font-size:12px}.field input:focus,.field select:focus{border-color:var(--blue)}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:22px}.toast{position:fixed;right:20px;bottom:20px;background:#172033;color:#fff;padding:12px 16px;border-radius:10px;font-size:12px;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none;z-index:9}.toast.show{opacity:1;transform:none}.page-placeholder{padding:50px 20px;text-align:center;color:var(--muted)}.page-placeholder h2{color:var(--text)}.footer-note{color:#98a1b2;font-size:10px;margin-top:20px;line-height:1.6}
+@media(max-width:1100px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.main-grid{grid-template-columns:1fr}.allocation{grid-template-columns:150px 1fr}.bottom-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.app{grid-template-columns:1fr}.sidebar{padding:12px 14px;gap:12px;position:sticky;top:0;z-index:3}.brand{padding:0 4px}.sidefoot,.navlabel{display:none}.nav{display:flex;overflow-x:auto}.nav button{white-space:nowrap;padding:9px 11px;font-size:11px}.main{padding:20px 13px}.top{align-items:flex-start;flex-direction:column;margin-bottom:20px}.actions{width:100%;flex-wrap:wrap}.h1{font-size:23px}.metrics{gap:10px}.card{padding:14px;border-radius:13px}.value{font-size:21px}.metric-top{font-size:10px}.metric-icon{display:none}.allocation{grid-template-columns:120px 1fr;gap:12px}.donut{width:118px;height:118px}.table-card .card-head{padding:16px 14px 0}.table-tools{flex-wrap:wrap}.search{width:130px}th,td{padding-left:13px;padding-right:13px}.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="logo">↗</div><span>patrimoine<span style="color:#8293ff">.</span></span></div>
+  <div><div class="navlabel">ESPACE INVESTISSEUR</div><nav class="nav">
+    <button class="active" data-page="dashboard"><span class="ico">▦</span>Vue d'ensemble</button>
+    <button data-page="positions"><span class="ico">◫</span>Mes positions</button>
+    <button data-page="scpi"><span class="ico">⌂</span>Mes SCPI</button>
+    <button data-page="operations"><span class="ico">↔</span>Opérations</button>
+    <button data-page="analyses"><span class="ico">◷</span>Analyses</button>
+  </nav></div>
+  <div class="sidefoot"><div style="font-weight:700;color:#fff;margin-bottom:5px">Mode manuel</div>Les données sont enregistrées dans ce navigateur. Pense à exporter une sauvegarde régulièrement.</div>
+</aside>
+<main class="main">
+  <section id="dashboard" class="section active">
+    <div class="top"><div><div class="eyebrow">MARDI 20 OCTOBRE 2026 · ESPACE PERSONNEL</div><h1 class="h1">Vue d'ensemble</h1><div class="sub">Un regard clair sur tes investissements.</div></div><div class="actions"><select class="select" id="accountFilter" aria-label="Filtrer le compte"><option value="all">Tous les comptes</option><option value="PEA">PEA</option><option value="CTO">CTO</option><option value="SCPI">SCPI</option></select><button class="btn" id="exportBtn">↧ Exporter CSV</button><button class="btn primary" id="addBtn">＋ Ajouter une opération</button></div></div>
+    <div class="grid metrics">
+      <div class="card"><div class="metric-top"><span>Valeur du portefeuille</span><span class="metric-icon">◈</span></div><div class="value" id="totalValue">0,00 €</div><div class="foot" id="valueFoot">Selon les derniers cours saisis</div></div>
+      <div class="card"><div class="metric-top"><span>Montant investi net</span><span class="metric-icon">↗</span></div><div class="value" id="investedValue">0,00 €</div><div class="foot">Achats moins ventes de titres</div></div>
+      <div class="card"><div class="metric-top"><span>Plus-value latente</span><span class="metric-icon">⌁</span></div><div class="value" id="pnlValue">0,00 €</div><div class="foot" id="pnlFoot">Sur les positions ouvertes</div></div>
+      <div class="card"><div class="metric-top"><span>Dividendes nets saisis</span><span class="metric-icon">＄</span></div><div class="value" id="divValue">0,00 €</div><div class="foot">Revenus enregistrés</div></div>
+    </div>
+    <div class="grid main-grid">
+      <div class="card"><div class="card-head"><div><div class="card-title">Évolution du portefeuille</div><div class="card-sub">Historique indicatif à partir des données saisies</div></div><div class="range"><button class="active" data-range="1M">1M</button><button data-range="6M">6M</button><button data-range="1A">1A</button><button data-range="ALL">Tout</button></div></div><div class="chartbox" id="lineChart"></div><div class="chart-labels"><span>Début de période</span><span>Dernière opération</span></div><div class="legend"><span><i class="dot" style="background:#4263eb"></i>Valeur estimée</span><span><i class="dot" style="background:#aebcff"></i>Montant investi net</span></div><div class="notice">Le graphique est une estimation reconstituée à partir des opérations, pas une cotation historique réelle.</div></div>
+      <div class="card"><div class="card-head"><div><div class="card-title">Allocation des actifs</div><div class="card-sub">Répartition par type d'instrument</div></div><span class="pill neutral" id="assetCount">0 actifs</span></div><div class="allocation"><div class="donut" id="donut"></div><div class="alloc-legend" id="allocLegend"></div></div><div class="notice">La répartition utilise les cours actuels que tu as saisis pour chaque ligne.</div></div>
+    </div>
+    <div class="card table-card"><div class="card-head"><div><div class="card-title">Principales positions</div><div class="card-sub">Tes lignes détenues, tous comptes confondus selon le filtre</div></div><button class="btn" data-goto="positions">Voir tout →</button></div><div class="table-wrap"><table><thead><tr><th>ACTIF</th><th>COMPTE</th><th>QUANTITÉ</th><th>COURS</th><th>VALEUR</th><th>GAIN / PERTE</th></tr></thead><tbody id="topPositions"></tbody></table></div></div>
+    <div class="grid bottom-grid" style="margin-top:17px"><div class="card"><div class="card-head"><div><div class="card-title">Dernières opérations</div><div class="card-sub">Historique récent de ton activité</div></div><button class="btn" data-goto="operations">Tout voir →</button></div><div class="activity" id="recentOps"></div></div><div class="card"><div class="card-head"><div><div class="card-title">Points d'attention</div><div class="card-sub">Indicateurs calculés à partir de tes saisies</div></div></div><div class="activity" id="insights"></div></div></div>
+    <div class="footer-note">Outil de suivi personnel à visée informative. Les calculs sont indicatifs et ne constituent pas un conseil en investissement ou fiscal.</div>
+  </section>
+  <section id="positions" class="section">
+    <div class="top"><div><div class="eyebrow">PORTEFEUILLE</div><h1 class="h1">Mes positions</h1><div class="sub">Gère les cours, quantités et types d'actifs.</div></div><div class="actions"><select class="select" id="posFilter"><option value="all">Tous les comptes</option><option>PEA</option><option>CTO</option><option>SCPI</option></select><button class="btn primary" id="addBtn2">＋ Ajouter une opération</button></div></div>
+    <div class="card table-card"><div class="card-head"><div><div class="card-title">Toutes les positions</div><div class="card-sub">Le cours est mis à jour manuellement via une opération de type « Mise à jour du cours ».</div></div><input class="search" id="posSearch" placeholder="Rechercher un actif…"></div><div class="table-wrap"><table><thead><tr><th>ACTIF</th><th>COMPTE</th><th>TYPE</th><th>QUANTITÉ</th><th>PRIX MOYEN</th><th>COURS</th><th>VALEUR</th><th>GAIN / PERTE</th></tr></thead><tbody id="allPositions"></tbody></table></div></div>
+    <div class="notice">Astuce : saisis un cours actuel à l'aide de « Mise à jour du cours ». Les cours ne sont pas récupérés automatiquement dans cette version.</div>
+  </section>
+  <section id="scpi" class="section">
+    <div class="top"><div><div class="eyebrow">IMMOBILIER PAPIER</div><h1 class="h1">Mes SCPI</h1><div class="sub">Parts détenues, valorisation et distributions saisies manuellement.</div></div><div class="actions"><button class="btn primary" id="addScpiBtn">＋ Ajouter un mouvement SCPI</button></div></div>
+    <div class="grid metrics"><div class="card"><div class="metric-top">Valeur estimée des SCPI</div><div class="value" id="scpiValue">0,00 €</div><div class="foot">Parts détenues × dernier prix de part saisi</div></div><div class="card"><div class="metric-top">Coût restant des parts</div><div class="value" id="scpiCost">0,00 €</div><div class="foot">Coût d'acquisition estimé</div></div><div class="card"><div class="metric-top">Plus-value latente</div><div class="value" id="scpiPnl">0,00 €</div><div class="foot">Hors frais de revente éventuels</div></div><div class="card"><div class="metric-top">Distributions sur 12 mois</div><div class="value" id="scpiDist">0,00 €</div><div class="foot">D'après les opérations « Dividende » des actifs SCPI</div></div></div>
+    <div class="card table-card"><div class="card-head"><div><div class="card-title">Portefeuille SCPI</div><div class="card-sub">Pour chaque SCPI, utilise Achat, Vente, Dividende et Mise à jour du cours. Le prix unitaire est le prix d'une part.</div></div><input class="search" id="scpiSearch" placeholder="Rechercher une SCPI…"></div><div class="table-wrap"><table><thead><tr><th>SCPI</th><th>COMPTE</th><th>PARTS</th><th>PRIX MOYEN</th><th>DERNIER PRIX DE PART</th><th>VALEUR ESTIMÉE</th><th>GAIN / PERTE</th></tr></thead><tbody id="scpiPositions"></tbody></table></div></div>
+    <div class="notice">Mode manuel : les prix de souscription/retrait et distributions ne sont pas récupérés automatiquement. Pour une distribution, sélectionne « Dividende », le compte « SCPI », le code de la SCPI et saisis le montant total reçu dans « Prix unitaire » avec une quantité de 1. Le calcul sur 12 mois utilise la date de l'opération.</div>
+  </section>
+  <section id="operations" class="section">
+    <div class="top"><div><div class="eyebrow">JOURNAL</div><h1 class="h1">Opérations</h1><div class="sub">Achats, ventes, dividendes, frais et mises à jour de cours.</div></div><div class="actions"><button class="btn" id="exportBtn2">↧ Exporter CSV</button><button class="btn primary" id="addBtn3">＋ Nouvelle opération</button></div></div>
+    <div class="card table-card"><div class="card-head"><div><div class="card-title">Historique complet</div><div class="card-sub" id="opCount">0 opération</div></div><input class="search" id="opSearch" placeholder="Rechercher…"></div><div class="table-wrap"><table><thead><tr><th>DATE</th><th>OPÉRATION</th><th>ACTIF</th><th>COMPTE</th><th>QUANTITÉ</th><th>PRIX</th><th>FRAIS</th><th>MONTANT</th><th></th></tr></thead><tbody id="allOps"></tbody></table></div></div>
+  </section>
+  <section id="analyses" class="section">
+    <div class="top"><div><div class="eyebrow">ANALYSE DU RISQUE</div><h1 class="h1">Analyses</h1><div class="sub">Concentration, répartition des comptes et rendement indicatif.</div></div><div class="actions"><button class="btn" id="exportBtn3">↧ Exporter CSV</button></div></div>
+    <div class="grid metrics"><div class="card"><div class="metric-top">Nombre de lignes</div><div class="value" id="aLines">0</div><div class="foot">Positions avec quantité positive</div></div><div class="card"><div class="metric-top">Poids de la première ligne</div><div class="value" id="aConcentration">—</div><div class="foot">Part de la valeur totale</div></div><div class="card"><div class="metric-top">Plus-values réalisées*</div><div class="value" id="aRealized">0,00 €</div><div class="foot">Estimation selon coût moyen</div></div><div class="card"><div class="metric-top">Frais enregistrés</div><div class="value" id="aFees">0,00 €</div><div class="foot">Cumul des frais saisis</div></div></div>
+    <div class="grid main-grid"><div class="card"><div class="card-head"><div><div class="card-title">Concentration par actif</div><div class="card-sub">Part de chaque ligne dans la valeur totale</div></div></div><div id="concentrationBars"></div></div><div class="card"><div class="card-head"><div><div class="card-title">Répartition par compte</div><div class="card-sub">Valeur de marché estimée</div></div></div><div id="accountBars"></div></div></div>
+    <div class="notice">* Les plus-values réalisées sont estimées au prix moyen pondéré simplifié. Elles ne remplacent pas le calcul fiscal de ton courtier, notamment pour le PEA/CTO, les frais et les opérations sur titres.</div>
+  </section>
+</main></div>
+<div class="modal-back" id="modalBack"><div class="modal"><h2>Ajouter une opération</h2><p>Enregistre un mouvement ou mets à jour le cours d'un actif détenu.</p>
+<form id="opForm"><div class="formgrid">
+<div class="field"><label for="type">Type d'opération</label><select id="type" required><option value="Achat">Achat</option><option value="Vente">Vente</option><option value="Dividende">Dividende</option><option value="Frais">Frais</option><option value="Mise à jour du cours">Mise à jour du cours</option></select></div>
+<div class="field"><label for="account">Compte</label><select id="account" required><option>PEA</option><option>CTO</option><option>SCPI</option></select></div>
+<div class="field"><label for="ticker">Ticker / code</label><input id="ticker" placeholder="Ex. CW8, AIR, AAPL" required maxlength="16"></div>
+<div class="field"><label for="name">Nom de l'actif</label><input id="name" placeholder="Ex. MSCI World" required maxlength="80"></div>
+<div class="field"><label for="kind">Type d'actif</label><select id="kind"><option>ETF</option><option>Action</option><option>Obligation</option><option>SCPI</option><option>Autre</option></select></div>
+<div class="field"><label for="date">Date</label><input id="date" type="date" required></div>
+<div class="field"><label for="qty">Quantité</label><input id="qty" type="number" min="0" step="0.000001" value="1" placeholder="Ex. 2" required></div>
+<div class="field"><label for="price">Prix unitaire (€)</label><input id="price" type="number" min="0" step="0.0001" placeholder="Ex. 450" required></div>
+<div class="field"><label for="fees">Frais (€)</label><input id="fees" type="number" min="0" step="0.01" value="0"></div>
+<div class="field"><label for="notes">Note (facultatif)</label><input id="notes" placeholder="Ex. achat mensuel"></div>
+</div><div class="notice" id="formHint">Pour un achat ou une vente, saisis la quantité et le prix unitaire. Pour un dividende, indique le montant dans « Prix unitaire » et laisse la quantité à 1.</div><div class="modal-actions"><button type="button" class="btn" id="cancelBtn">Annuler</button><button class="btn primary" type="submit">Enregistrer</button></div></form></div></div><div class="toast" id="toast"></div>
+<script>
+const STORAGE='patrimoine_dashboard_v1';
+let storageAvailable=true, ops=[];
+try {
+  const saved=localStorage.getItem(STORAGE);
+  ops=saved ? JSON.parse(saved) : [];
+  if(!Array.isArray(ops)) ops=[];
+} catch(err) {
+  storageAvailable=false;
+  ops=[];
+}
+let range='1M';
+const $=id=>document.getElementById(id);
+const euro=n=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(Number(n)||0);
+const num=n=>new Intl.NumberFormat('fr-FR',{maximumFractionDigits:4}).format(Number(n)||0);
+const pct=n=>`${(Number(n)||0)>=0?'+':''}${(Number(n)||0).toLocaleString('fr-FR',{maximumFractionDigits:2})}%`;
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const colors=['#4263eb','#18a77b','#f2a93b','#9a72db','#e46d87','#36a7c8','#8994a8'];
+function save(){
+  try {
+    localStorage.setItem(STORAGE,JSON.stringify(ops));
+    storageAvailable=true;
+    return true;
+  } catch(err) {
+    storageAvailable=false;
+    return false;
+  }
+}
+function filtered(account='all'){return account==='all'?ops:ops.filter(o=>o.account===account)}
+function calc(account='all'){
+  // Recalcul intégral des positions depuis le journal, par compte et ticker.
+  const list=filtered(account).slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')||(Number(a.created)||0)-(Number(b.created)||0));
+  const map={}; let div=0,fees=0,realized=0,investedNet=0;
+  for(const o of list){
+    const fee=Number(o.fees)||0, qty=Number(o.qty)||0, price=Number(o.price)||0;
+    fees+=fee;
+    const ticker=String(o.ticker||'').trim().toUpperCase();
+    const key=String(o.account||'')+'|'+ticker;
+    if(o.type==='Dividende'){div+=price*(qty||1)-fee;continue}
+    if(o.type==='Frais')continue;
+    if(!map[key]) map[key]={ticker,name:o.name||ticker,kind:o.kind||'Autre',account:o.account,qty:0,cost:0,price:price,realized:0};
+    const a=map[key];
+    if(o.name) a.name=o.name;
+    if(o.kind) a.kind=o.kind;
+    if(o.type==='Achat'){
+      if(qty<=0) continue;
+      a.cost+=qty*price+fee; a.qty+=qty; a.price=price; investedNet+=qty*price+fee;
+    } else if(o.type==='Vente'){
+      if(qty<=0 || a.qty<=0) continue;
+      const sold=Math.min(qty,a.qty), averageCost=a.cost/a.qty;
+      const gain=sold*price-fee-sold*averageCost;
+      a.realized+=gain; realized+=gain;
+      a.qty=Math.max(0,a.qty-sold); a.cost=Math.max(0,a.cost-sold*averageCost);
+      a.price=price; investedNet-=sold*price-fee;
+    } else if(o.type==='Mise à jour du cours'){a.price=price}
+  }
+  const arr=Object.values(map).filter(a=>a.qty>0.0000001)
+    .map(a=>({...a,avg:a.qty?a.cost/a.qty:0,value:a.qty*a.price,pnl:a.qty*a.price-a.cost}))
+    .sort((a,b)=>b.value-a.value);
+  const value=arr.reduce((s,a)=>s+a.value,0), cost=arr.reduce((s,a)=>s+a.cost,0), pnl=arr.reduce((s,a)=>s+a.pnl,0);
+  return {arr,div,fees,realized,investedNet,value,cost,pnl,returnPct:cost?pnl/cost*100:0};
+}
+function setMoney(id,n){$(id).textContent=euro(n);$(id).classList.toggle('positive',n>0);$(id).classList.toggle('negative',n<0)}
+function tablePosition(a,wide=false){return `<tr><td><div class="asset"><div class="ticker">${esc(a.ticker.slice(0,4))}</div><div><div class="asset-name">${esc(a.name)}</div><div class="asset-sub">${esc(a.ticker)} · ${esc(a.kind)}</div></div></div></td><td><span class="account-tag">${esc(a.account)}</span></td>${wide?`<td>${esc(a.kind)}</td>`:''}<td>${num(a.qty)}</td>${wide?`<td>${euro(a.avg)}</td>`:''}<td>${euro(a.price)}</td><td><strong>${euro(a.value)}</strong></td><td class="${a.pnl>=0?'positive':'negative'}">${euro(a.pnl)} <span style="color:#9aa4b6">(${a.cost?pct(a.pnl/a.cost*100):'—'})</span></td></tr>`}
+function emptyRow(cols,msg='Aucune position. Ajoute ton premier achat pour commencer.') {return `<tr><td colspan="${cols}"><div class="empty">${msg}</div></td></tr>`}
+function renderLine(c){
+ const el=$('lineChart'); if(!c.arr.length){el.innerHTML='<div class="empty" style="padding-top:65px">Ajoute des opérations et renseigne les cours pour voir ton graphique.</div>';return}
+ const total=c.value, invested=c.cost;let vals;
+ const seed=Math.max(1,Math.round(total/20));vals=Array.from({length:28},(_,i)=>{let t=i/27;return Math.max(0,invested*(.85+.15*t)+(total-invested)*t+(Math.sin(i*1.7)*seed*.12))});vals[27]=total;
+ const max=Math.max(...vals,total,invested,1)*1.12,min=Math.min(...vals,invested)*.88;
+ const x=i=>8+i*3.35,y=v=>190-(v-min)/(max-min||1)*170;
+ let path=vals.map((v,i)=>`${i?'L':'M'} ${x(i)} ${y(v)}`).join(' ');
+ let area=path+` L ${x(27)} 195 L ${x(0)} 195 Z`;
+ let grid=[.15,.45,.75].map(t=>`<line x1="7" x2="99" y1="${195-t*170}" y2="${195-t*170}" stroke="#edf0f5" stroke-dasharray="1 2"/>`).join('');
+ el.innerHTML=`<svg viewBox="0 0 100 200" preserveAspectRatio="none" aria-label="Graphique estimé"><defs><linearGradient id="fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#4263eb" stop-opacity=".2"/><stop offset="1" stop-color="#4263eb" stop-opacity="0"/></linearGradient></defs>${grid}<path d="${area}" fill="url(#fill)"/><path d="${path}" fill="none" stroke="#4263eb" stroke-width="1.8" vector-effect="non-scaling-stroke"/><line x1="8" x2="99" y1="${y(invested)}" y2="${y(invested)}" stroke="#aebcff" stroke-width="1.4" stroke-dasharray="4 3" vector-effect="non-scaling-stroke"/><circle cx="98" cy="${y(total)}" r="2.2" fill="#4263eb" vector-effect="non-scaling-stroke"/></svg>`;
+}
+function renderDonut(c){
+ const types={};c.arr.forEach(a=>types[a.kind]=(types[a.kind]||0)+a.value);
+ const entries=Object.entries(types).sort((a,b)=>b[1]-a[1]);let total=entries.reduce((s,e)=>s+e[1],0),offset=0;
+ const circles=entries.map(([k,v],i)=>{let dash=total?v/total*314:0,html=`<circle cx="60" cy="60" r="50" fill="none" stroke="${colors[i%colors.length]}" stroke-width="13" stroke-dasharray="${dash} ${314-dash}" stroke-dashoffset="${-offset}"/>`;offset+=dash;return html}).join('');
+ $('donut').innerHTML=total?`<svg viewBox="0 0 120 120">${circles||''}<circle cx="60" cy="60" r="42" fill="white"/></svg><div class="donut-center"><strong>${c.arr.length}</strong><span>positions</span></div>`:`<svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" fill="none" stroke="#edf0f5" stroke-width="13"/></svg><div class="donut-center"><strong>0</strong><span>positions</span></div>`;
+ $('allocLegend').innerHTML=entries.length?entries.map(([k,v],i)=>`<div class="alloc-row"><i class="swatch" style="background:${colors[i%colors.length]}"></i><span class="name">${esc(k)}</span><strong>${total?pct(v/total*100).replace('+',''): '0%'}</strong></div>`).join(''):'<div class="empty">Les actifs apparaîtront ici.</div>';
+ $('assetCount').textContent=`${c.arr.length} actif${c.arr.length>1?'s':''}`;
+}
+function opAmount(o){if(o.type==='Achat')return -((+o.qty||0)*(+o.price||0)+(+o.fees||0));if(o.type==='Vente')return (+o.qty||0)*(+o.price||0)-(+o.fees||0);if(o.type==='Dividende')return (+o.qty||1)*(+o.price||0)-(+o.fees||0);if(o.type==='Frais')return -(+o.fees||+o.price||0);return 0}
+function renderOpRows(list){return list.slice().sort((a,b)=>b.date.localeCompare(a.date)||b.created-a.created).map(o=>`<tr><td>${esc(o.date)}</td><td><strong>${esc(o.type)}</strong></td><td><div class="asset"><div class="ticker">${esc(o.ticker.slice(0,4))}</div><div><div class="asset-name">${esc(o.name)}</div><div class="asset-sub">${esc(o.ticker)}${o.notes?' · '+esc(o.notes):''}</div></div></div></td><td><span class="account-tag">${esc(o.account)}</span></td><td>${num(o.qty)}</td><td>${euro(o.price)}</td><td>${euro(o.fees)}</td><td class="${opAmount(o)>=0?'positive':'negative'}">${euro(opAmount(o))}</td><td><button class="btn" style="padding:5px 8px" data-delete="${o.id}" title="Supprimer">×</button></td></tr>`).join('')}
+function renderBars(el,entries,total){
+ $(el).innerHTML=entries.length?entries.map(([name,val],i)=>`<div style="margin:15px 0"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:7px"><span>${esc(name)}</span><strong>${euro(val)} <span style="color:#929db0;font-weight:500">${total?pct(val/total*100).replace('+',''):'0%'}</span></strong></div><div style="height:7px;border-radius:20px;background:#edf0f5;overflow:hidden"><div style="height:100%;width:${total?Math.max(0,val/total*100):0}%;background:${colors[i%colors.length]};border-radius:20px"></div></div></div>`).join(''):'<div class="empty">Pas encore de données à analyser.</div>';
+}
+function scpiDistributions12m(){
+ const cutoff=new Date();cutoff.setMonth(cutoff.getMonth()-12);const dateCutoff=cutoff.toISOString().slice(0,10);
+ return ops.filter(o=>o.type==='Dividende' && (o.kind==='SCPI' || o.account==='SCPI') && (o.date||'')>=dateCutoff).reduce((sum,o)=>sum+(Number(o.price)||0)*(Number(o.qty)||1)-(Number(o.fees)||0),0);
+}
+function render(){
+ const account=$('accountFilter')?.value||'all',c=calc(account);
+ setMoney('totalValue',c.value);setMoney('investedValue',c.cost);setMoney('pnlValue',c.pnl);setMoney('divValue',c.div);
+ $('pnlFoot').textContent=c.cost?`${pct(c.returnPct)} sur le coût restant des positions`:'Sur les positions ouvertes';
+ $('valueFoot').textContent=`${c.arr.length} ligne${c.arr.length>1?'s':''} détenue${c.arr.length>1?'s':''}`;
+ renderLine(c);renderDonut(c);
+ $('topPositions').innerHTML=c.arr.length?c.arr.slice(0,5).map(a=>tablePosition(a)).join(''):emptyRow(6);
+ $('allPositions').innerHTML=(()=>{
+  let pf=$('posFilter')?.value||'all',search=($('posSearch')?.value||'').toLowerCase();
+  let arr=calc(pf).arr.filter(a=>(a.name+' '+a.ticker+' '+a.kind).toLowerCase().includes(search));
+  return arr.length?arr.map(a=>tablePosition(a,true)).join(''):emptyRow(8)
+ })();
+ const sorted=ops.slice().sort((a,b)=>b.date.localeCompare(a.date)||b.created-a.created);
+ $('recentOps').innerHTML=sorted.length?sorted.slice(0,4).map(o=>`<div class="activity-row"><div class="activity-icon">${o.type==='Achat'?'↗':o.type==='Vente'?'↙':o.type==='Dividende'?'＄':o.type==='Frais'?'−':'◷'}</div><div class="activity-main"><strong>${esc(o.type)} · ${esc(o.ticker)}</strong><span>${esc(o.date)} · ${esc(o.account)}</span></div><div class="activity-amount ${opAmount(o)>=0?'positive':'negative'}">${euro(opAmount(o))}</div></div>`).join(''):'<div class="empty">Tes opérations apparaîtront ici.</div>';
+ const cAll=calc('all'),ins=[];
+ if(!cAll.arr.length)ins.push(['＋','Commence par enregistrer un achat','Ajoute une première ligne pour alimenter les analyses.']);
+ else {let top=cAll.arr[0],weight=cAll.value?top.value/cAll.value*100:0;if(weight>35)ins.push(['!','Concentration élevée',`${top.ticker} représente ${weight.toFixed(1).replace('.',',')} % du portefeuille.`]);else ins.push(['✓','Concentration des lignes',`La première position pèse ${weight.toFixed(1).replace('.',',')} % du portefeuille.`]);if(cAll.arr.some(a=>a.price===0))ins.push(['↻','Cours manquants','Renseigne un dernier cours pour valoriser toutes tes lignes.']);else ins.push(['◷','Cours à actualiser','Les cours sont manuels : mets-les à jour pour une valorisation plus fiable.']);}
+ $('insights').innerHTML=ins.map(([i,t,d])=>`<div class="activity-row"><div class="activity-icon">${i}</div><div class="activity-main"><strong>${t}</strong><span>${d}</span></div></div>`).join('');
+ const all=calc('all');$('aLines').textContent=all.arr.length;$('aConcentration').textContent=all.value&&all.arr.length?pct(all.arr[0].value/all.value*100).replace('+',''):'—';setMoney('aRealized',all.realized);setMoney('aFees',all.fees);
+ renderBars('concentrationBars',all.arr.map(a=>[a.ticker+' · '+a.name,a.value]),all.value);
+ renderBars('accountBars',['PEA','CTO','SCPI'].map(k=>[k,calc(k).value]).filter(e=>e[1]>0),all.value);
+ $('allOps').innerHTML=renderOpRows(ops.filter(o=>{let q=($('opSearch')?.value||'').toLowerCase();return (o.name+' '+o.ticker+' '+o.type+' '+o.account).toLowerCase().includes(q)}));
+ $('opCount').textContent=`${ops.length} opération${ops.length>1?'s':''}`;
+ // Espace SCPI : inclut les opérations explicitement classées SCPI, même si le compte est CTO/PEA.
+ const scpiSearch=($('scpiSearch')?.value||'').toLowerCase();
+ const scpiArr=calc('all').arr.filter(a=>(String(a.kind||'').toUpperCase()==='SCPI'||String(a.account||'').toUpperCase()==='SCPI') && (a.name+' '+a.ticker).toLowerCase().includes(scpiSearch));
+ const scpiValue=scpiArr.reduce((s,a)=>s+a.value,0), scpiCost=scpiArr.reduce((s,a)=>s+a.cost,0), scpiPnl=scpiArr.reduce((s,a)=>s+a.pnl,0);
+ setMoney('scpiValue',scpiValue);setMoney('scpiCost',scpiCost);setMoney('scpiPnl',scpiPnl);setMoney('scpiDist',scpiDistributions12m());
+ $('scpiPositions').innerHTML=scpiArr.length?scpiArr.map(a=>`<tr><td><div class="asset"><div class="ticker">${esc(a.ticker.slice(0,4))}</div><div><div class="asset-name">${esc(a.name)}</div><div class="asset-sub">${esc(a.ticker)} · SCPI</div></div></div></td><td><span class="account-tag">${esc(a.account)}</span></td><td>${num(a.qty)}</td><td>${euro(a.avg)}</td><td>${euro(a.price)}</td><td><strong>${euro(a.value)}</strong></td><td class="${a.pnl>=0?'positive':'negative'}">${euro(a.pnl)} <span style="color:#9aa4b6">(${a.cost?pct(a.pnl/a.cost*100):'—'})</span></td></tr>`).join(''):emptyRow(7,'Aucune SCPI détectée. Ajoute une opération avec le type d’actif « SCPI » ou le compte « SCPI ».');
+}
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400)}
+function openModal(){ $('modalBack').classList.add('open');$('date').value=new Date().toISOString().slice(0,10);$('ticker').focus()}
+function closeModal(){$('modalBack').classList.remove('open')}
+function exportCSV(){
+ const headers=['date','type','compte','ticker','nom','type_actif','quantite','prix_unitaire_eur','frais_eur','note'];
+ const rows=ops.map(o=>headers.map(h=>String(({date:o.date,type:o.type,compte:o.account,ticker:o.ticker,nom:o.name,type_actif:o.kind,quantite:o.qty,prix_unitaire_eur:o.price,frais_eur:o.fees,note:o.notes})[h]??'').replace(/"/g,'""')));
+ const csv=[headers.join(';'),...rows.map(r=>r.map(x=>`"${x}"`).join(';'))].join('\r\n');
+ const url=URL.createObjectURL(new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'})),a=document.createElement('a');a.href=url;a.download='operations-boursieres.csv';a.click();URL.revokeObjectURL(url);toast('Export CSV préparé');
+}
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.section').forEach(s=>s.classList.toggle('active',s.id===b.dataset.page));window.scrollTo({top:0,behavior:'smooth'})}));
+document.querySelectorAll('[data-goto]').forEach(b=>b.addEventListener('click',()=>document.querySelector(`[data-page="${b.dataset.goto}"]`).click()));
+['addBtn','addBtn2','addBtn3'].forEach(id=>$(id).addEventListener('click',openModal));
+$('addScpiBtn').addEventListener('click',()=>{openModal();$('kind').value='SCPI';$('account').value='SCPI';$('ticker').focus()});
+$('scpiSearch').addEventListener('input',render);
+['exportBtn','exportBtn2','exportBtn3'].forEach(id=>$(id).addEventListener('click',exportCSV));
+$('cancelBtn').addEventListener('click',closeModal);$('modalBack').addEventListener('click',e=>{if(e.target===$('modalBack'))closeModal()});
+$('type').addEventListener('change',()=>{const t=$('type').value;if((t==='Dividende'||t==='Mise à jour du cours')&&!$('qty').value)$('qty').value='1';const hints={Dividende:'Indique le montant du dividende dans « Prix unitaire » et laisse la quantité à 1.', 'Mise à jour du cours':'Saisis le dernier cours connu. La quantité n’affecte pas le calcul pour ce type.', Achat:'Pour un achat, saisis la quantité et le prix unitaire. Les frais sont inclus dans le coût.', Vente:'Pour une vente, saisis la quantité et le prix unitaire. La quantité vendue ne peut pas dépasser celle détenue.', Frais:'Saisis l’actif concerné et le montant des frais dans « Prix unitaire ».',};$('formHint').textContent=hints[t]||'Vérifie les champs obligatoires.'});
+$('opForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ try {
+ const form=e.currentTarget;
+ if(!form.checkValidity()){form.reportValidity();toast('Complète les champs obligatoires.');return}
+ const type=$('type').value,account=$('account').value,ticker=$('ticker').value.trim().toUpperCase(),name=$('name').value.trim(),kind=$('kind').value,date=$('date').value,qty=+$('qty').value,price=+$('price').value,fees=+$('fees').value,notes=$('notes').value.trim();
+ if(!ticker||!name||!date||!Number.isFinite(qty)||!Number.isFinite(price)||qty<0||price<0||fees<0){toast('Vérifie les champs obligatoires.');return}
+ if(type==='Achat'&&qty<=0){toast('La quantité doit être supérieure à zéro.');return}
+ if(type==='Vente'){let held=calc(account).arr.find(a=>String(a.ticker).trim().toUpperCase()===ticker);if(!held){toast('Aucune position détenue pour ce ticker dans ce compte. Vérifie le ticker, le compte et la date de l’achat.');return}if(qty>held.qty+1e-8){toast(`Quantité vendue trop élevée : tu détiens ${num(held.qty)} titre(s) sur ce compte.`);return}if(qty<=0){toast('La quantité doit être supérieure à zéro.');return}}
+ if(type==='Dividende'&&price<=0){toast('Le montant du dividende doit être supérieur à zéro.');return}
+ ops.push({id:crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random(),created:Date.now(),type,account,ticker,name,kind,date,qty:type==='Dividende'?(qty||1):qty,price,fees,notes});
+ const persisted=save();
+ render();closeModal();$('opForm').reset();$('qty').value='1';$('fees').value='0';
+ toast(persisted?'Opération enregistrée avec succès':'Opération ajoutée pour cette session, mais Chrome bloque le stockage local. Exporte le CSV avant de fermer.');
+ } catch(err) {
+   console.error('Erreur enregistrement opération:',err);
+   toast('Erreur lors de l’enregistrement : '+(err && err.message ? err.message : 'erreur inconnue'));
+ }
+});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-delete]');if(b){const op=ops.find(o=>o.id===b.dataset.delete);if(op&&confirm(`Supprimer l'opération ${op.type} ${op.ticker} du ${op.date} ?`)){ops=ops.filter(o=>o.id!==op.id);save();render();toast('Opération supprimée')}}});
+$('accountFilter').addEventListener('change',render);$('posFilter').addEventListener('change',render);$('posSearch').addEventListener('input',render);$('opSearch').addEventListener('input',render);
+document.querySelectorAll('[data-range]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-range]').forEach(x=>x.classList.toggle('active',x===b));range=b.dataset.range;renderLine(calc($('accountFilter').value));toast('Graphique indicatif actualisé')}));
+render();
+if(!storageAvailable) toast('Stockage local indisponible : les données ne seront pas conservées après fermeture.');
+</script>
+</body></html>
