@@ -21,11 +21,11 @@
     <button data-page="operations"><span class="ico">↔</span>Opérations</button>
     <button data-page="analyses"><span class="ico">◷</span>Analyses</button>
   </nav></div>
-  <div class="sidefoot"><div style="font-weight:700;color:#fff;margin-bottom:5px">Mode manuel</div>Les données sont enregistrées dans ce navigateur. Pense à exporter une sauvegarde régulièrement.</div>
+  <div class="sidefoot"><div style="font-weight:700;color:#fff;margin-bottom:5px">Cours actualisables</div>Les opérations et les cours restent enregistrés dans ce navigateur. Exporte régulièrement une sauvegarde.</div>
 </aside>
 <main class="main">
   <section id="dashboard" class="section active">
-    <div class="top"><div><div class="eyebrow">MARDI 20 OCTOBRE 2026 · ESPACE PERSONNEL</div><h1 class="h1">Vue d'ensemble</h1><div class="sub">Un regard clair sur tes investissements.</div></div><div class="actions"><select class="select" id="accountFilter" aria-label="Filtrer le compte"><option value="all">Tous les comptes</option><option value="PEA">PEA</option><option value="CTO">CTO</option><option value="SCPI">SCPI</option></select><button class="btn" id="exportBtn">↧ Exporter CSV</button><button class="btn" id="importBtn">↥ Importer CSV</button><input id="importFile" type="file" accept=".csv,text/csv" hidden><button class="btn primary" id="addBtn">＋ Ajouter une opération</button></div></div>
+    <div class="top"><div><div class="eyebrow">MARDI 20 OCTOBRE 2026 · ESPACE PERSONNEL</div><h1 class="h1">Vue d'ensemble</h1><div class="sub">Un regard clair sur tes investissements.</div></div><div class="actions"><select class="select" id="accountFilter" aria-label="Filtrer le compte"><option value="all">Tous les comptes</option><option value="PEA">PEA</option><option value="CTO">CTO</option><option value="SCPI">SCPI</option></select><button class="btn" id="refreshQuotesBtn">↻ Actualiser les cours</button><button class="btn" id="exportBtn">↧ Exporter CSV</button><button class="btn" id="importBtn">↥ Importer CSV</button><input id="importFile" type="file" accept=".csv,text/csv" hidden><button class="btn primary" id="addBtn">＋ Ajouter une opération</button></div></div>
     <div class="grid metrics">
       <div class="card"><div class="metric-top"><span>Valeur du portefeuille</span><span class="metric-icon">◈</span></div><div class="value" id="totalValue">0,00 €</div><div class="foot" id="valueFoot">Selon les derniers cours saisis</div></div>
       <div class="card"><div class="metric-top"><span>Montant investi net</span><span class="metric-icon">↗</span></div><div class="value" id="investedValue">0,00 €</div><div class="foot">Achats moins ventes de titres</div></div>
@@ -38,12 +38,12 @@
     </div>
     <div class="card table-card"><div class="card-head"><div><div class="card-title">Principales positions</div><div class="card-sub">Tes lignes détenues, tous comptes confondus selon le filtre</div></div><button class="btn" data-goto="positions">Voir tout →</button></div><div class="table-wrap"><table><thead><tr><th>ACTIF</th><th>COMPTE</th><th>QUANTITÉ</th><th>COURS</th><th>VALEUR</th><th>GAIN / PERTE</th></tr></thead><tbody id="topPositions"></tbody></table></div></div>
     <div class="grid bottom-grid" style="margin-top:17px"><div class="card"><div class="card-head"><div><div class="card-title">Dernières opérations</div><div class="card-sub">Historique récent de ton activité</div></div><button class="btn" data-goto="operations">Tout voir →</button></div><div class="activity" id="recentOps"></div></div><div class="card"><div class="card-head"><div><div class="card-title">Points d'attention</div><div class="card-sub">Indicateurs calculés à partir de tes saisies</div></div></div><div class="activity" id="insights"></div></div></div>
-    <div class="footer-note">Outil de suivi personnel à visée informative. Les calculs sont indicatifs et ne constituent pas un conseil en investissement ou fiscal.</div>
+    <div class="notice" id="quoteStatus" role="status">Cours automatiques non actualisés dans cette session. Clique sur « Actualiser les cours » pour récupérer les dernières cotations disponibles.</div><div class="footer-note">Outil de suivi personnel à visée informative. Les calculs sont indicatifs et ne constituent pas un conseil en investissement ou fiscal.</div>
   </section>
   <section id="positions" class="section">
-    <div class="top"><div><div class="eyebrow">PORTEFEUILLE</div><h1 class="h1">Mes positions</h1><div class="sub">Gère les cours, quantités et types d'actifs.</div></div><div class="actions"><select class="select" id="posFilter"><option value="all">Tous les comptes</option><option>PEA</option><option>CTO</option><option>SCPI</option></select><button class="btn primary" id="addBtn2">＋ Ajouter une opération</button></div></div>
-    <div class="card table-card"><div class="card-head"><div><div class="card-title">Toutes les positions</div><div class="card-sub">Le cours est mis à jour manuellement via une opération de type « Mise à jour du cours ».</div></div><input class="search" id="posSearch" placeholder="Rechercher un actif…"></div><div class="table-wrap"><table><thead><tr><th>ACTIF</th><th>COMPTE</th><th>TYPE</th><th>QUANTITÉ</th><th>PRIX MOYEN</th><th>COURS</th><th>VALEUR</th><th>GAIN / PERTE</th></tr></thead><tbody id="allPositions"></tbody></table></div></div>
-    <div class="notice">Astuce : saisis un cours actuel à l'aide de « Mise à jour du cours ». Les cours ne sont pas récupérés automatiquement dans cette version.</div>
+    <div class="top"><div><div class="eyebrow">PORTEFEUILLE</div><h1 class="h1">Mes positions</h1><div class="sub">Gère les cours, quantités et types d'actifs.</div></div><div class="actions"><select class="select" id="posFilter"><option value="all">Tous les comptes</option><option>PEA</option><option>CTO</option><option>SCPI</option></select><button class="btn" id="refreshQuotesBtn2">↻ Actualiser les cours</button><button class="btn primary" id="addBtn2">＋ Ajouter une opération</button></div></div>
+    <div class="card table-card"><div class="card-head"><div><div class="card-title">Toutes les positions</div><div class="card-sub">Les actions et ETF peuvent être actualisés automatiquement. Les SCPI restent à mettre à jour selon le dernier prix de part publié.</div></div><input class="search" id="posSearch" placeholder="Rechercher un actif…"></div><div class="table-wrap"><table><thead><tr><th>ACTIF</th><th>COMPTE</th><th>TYPE</th><th>QUANTITÉ</th><th>PRIX MOYEN</th><th>COURS</th><th>VALEUR</th><th>GAIN / PERTE</th></tr></thead><tbody id="allPositions"></tbody></table></div></div>
+    <div class="notice">Les cours récupérés sont indicatifs et peuvent être différés. Vérifie les tickers si une ligne ne se met pas à jour. Les SCPI et les actifs non reconnus restent au dernier cours enregistré.</div>
   </section>
   <section id="scpi" class="section">
     <div class="top"><div><div class="eyebrow">IMMOBILIER PAPIER</div><h1 class="h1">Mes SCPI</h1><div class="sub">Parts détenues, valorisation et distributions saisies manuellement.</div></div><div class="actions"><button class="btn primary" id="addScpiBtn">＋ Ajouter un mouvement SCPI</button></div></div>
@@ -87,6 +87,10 @@ try {
   ops=[];
 }
 let range='1M';
+const QUOTES_STORAGE='patrimoine_dashboard_quotes_v1';
+let quoteCache={};
+try { quoteCache=JSON.parse(localStorage.getItem(QUOTES_STORAGE)||'{}')||{}; } catch(e) { quoteCache={}; }
+let quoteRefreshBusy=false;
 const $=id=>document.getElementById(id);
 const euro=n=>new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(Number(n)||0);
 const num=n=>new Intl.NumberFormat('fr-FR',{maximumFractionDigits:4}).format(Number(n)||0);
@@ -131,6 +135,8 @@ function calc(account='all'){
       a.price=price; investedNet-=sold*price-fee;
     } else if(o.type==='Mise à jour du cours'){a.price=price}
   }
+  // Les cours récupérés automatiquement remplacent le dernier cours saisi, sans modifier le journal d'opérations.
+  Object.values(map).forEach(a=>{const q=quoteCache[String(a.account||'')+'|'+String(a.ticker||'').trim().toUpperCase()];if(q&&Number.isFinite(Number(q.price))&&Number(q.price)>0)a.price=Number(q.price)});
   const arr=Object.values(map).filter(a=>a.qty>0.0000001)
     .map(a=>({...a,avg:a.qty?a.cost/a.qty:0,value:a.qty*a.price,pnl:a.qty*a.price-a.cost}))
     .sort((a,b)=>b.value-a.value);
@@ -198,6 +204,88 @@ function render(){
  setMoney('scpiValue',scpiValue);setMoney('scpiCost',scpiCost);setMoney('scpiPnl',scpiPnl);setMoney('scpiDist',scpiDistributions12m());
  $('scpiPositions').innerHTML=scpiArr.length?scpiArr.map(a=>`<tr><td><div class="asset"><div class="ticker">${esc(a.ticker.slice(0,4))}</div><div><div class="asset-name">${esc(a.name)}</div><div class="asset-sub">${esc(a.ticker)} · SCPI</div></div></div></td><td><span class="account-tag">${esc(a.account)}</span></td><td>${num(a.qty)}</td><td>${euro(a.avg)}</td><td>${euro(a.price)}</td><td><strong>${euro(a.value)}</strong></td><td class="${a.pnl>=0?'positive':'negative'}">${euro(a.pnl)} <span style="color:#9aa4b6">(${a.cost?pct(a.pnl/a.cost*100):'—'})</span></td></tr>`).join(''):emptyRow(7,'Aucune SCPI détectée. Ajoute une opération avec le type d’actif « SCPI » ou le compte « SCPI ».');
 }
+function yahooCandidates(a){
+ const t=String(a.ticker||'').trim().toUpperCase(); if(!t) return [];
+ // Correspondances ISIN vers des symboles Yahoo Finance vérifiés/recherchés.
+ // On reconnaît aussi les ISIN saisis à tort avec le suffixe .PA.
+ const isinAliases={
+  'IE0002XZSHO1':['WPEA.PA','WPEA'],
+  'FR0011550185':['ESE.PA','ESE'],
+  'FR0000121329':['HO.PA','HO'],
+  'IE00B6R52036':['ISOE.AS','IS0E.DE','IAUP.L','SPGP.L'],
+  'FR0011871110':['PUST.PA','PUST'],
+  'FR0013346681':['OBLI.PA','OBLI']
+ };
+ const normalized=t.replace(/\.PA$/,'');
+ if(isinAliases[normalized]) return isinAliases[normalized];
+ if(/[.=^=-]/.test(t)) return [t];
+ // En PEA, les titres français et ETF Euronext Paris sont généralement suffixés .PA.
+ return a.account==='PEA' ? [t+'.PA',t] : [t,t+'.PA'];
+}
+async function fetchYahooQuote(symbol){
+ const target='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(symbol)+'?range=1d&interval=1d';
+ // Yahoo n'autorise pas directement les appels depuis une page statique ; ce proxy public peut fonctionner sans clé, mais n'est pas garanti.
+ const urls=[target,'https://proxy.cors.dev/'+target]; let lastError;
+ for(const url of urls){
+  try{
+   const response=await fetch(url,{cache:'no-store'});
+   if(!response.ok) throw new Error('HTTP '+response.status);
+   const json=await response.json(); const result=json?.chart?.result?.[0];
+   if(!result) throw new Error(json?.chart?.error?.description||'Symbole introuvable');
+   const meta=result.meta||{}; const closes=result.indicators?.quote?.[0]?.close||[];
+   const lastClose=[...closes].reverse().find(v=>Number.isFinite(Number(v))&&Number(v)>0);
+   const price=Number(meta.regularMarketPrice||lastClose);
+   if(!Number.isFinite(price)||price<=0) throw new Error('Cours indisponible');
+   return {price,currency:meta.currency||'EUR',symbol:meta.symbol||symbol,name:meta.longName||meta.shortName||symbol,updatedAt:Date.now()};
+  }catch(err){lastError=err;}
+ }
+ throw lastError||new Error('Source indisponible');
+}
+async function getFxRate(from){
+ if(from==='EUR') return 1;
+ const symbols={USD:'EURUSD=X',GBP:'EURGBP=X',CHF:'EURCHF=X'};
+ const symbol=symbols[from]; if(!symbol) throw new Error('Devise non prise en charge : '+from);
+ const q=await fetchYahooQuote(symbol); if(!q.price) throw new Error('Taux de change indisponible');
+ // Le ticker EURXXX donne le nombre d'unités étrangères pour 1 EUR.
+ return 1/q.price;
+}
+async function refreshQuotes(){
+ if(quoteRefreshBusy)return;
+ const assets=calc('all').arr.filter(a=>String(a.kind||'').toUpperCase()!=='SCPI'&&String(a.account||'').toUpperCase()!=='SCPI');
+ if(!assets.length){toast('Aucune action ou ETF à actualiser.');return;}
+ quoteRefreshBusy=true;
+ ['refreshQuotesBtn','refreshQuotesBtn2'].forEach(id=>{if($(id)){ $(id).disabled=true; $(id).textContent='Actualisation…'; }});
+ const status=$('quoteStatus'); if(status)status.textContent='Récupération des cours en cours…';
+ let updated=0,failed=[]; const fx={EUR:1};
+ try{
+  for(const a of assets){
+   const key=String(a.account||'')+'|'+String(a.ticker||'').trim().toUpperCase();
+   let quote=null,lastErr=null;
+   for(const symbol of yahooCandidates(a)){
+    try{quote=await fetchYahooQuote(symbol);break;}catch(err){lastErr=err;}
+   }
+   if(!quote){failed.push(a.ticker+' ('+(lastErr?.message||'introuvable')+')');continue;}
+   try{
+    const cur=String(quote.currency||'EUR').toUpperCase();
+    if(!(cur in fx))fx[cur]=await getFxRate(cur);
+    const priceEUR=quote.price*fx[cur];
+    if(!Number.isFinite(priceEUR)||priceEUR<=0)throw new Error('Conversion en EUR impossible');
+    quoteCache[key]={price:priceEUR,rawPrice:quote.price,currency:cur,symbol:quote.symbol,source:'Yahoo Finance',updatedAt:Date.now()};
+    updated++;
+   }catch(err){failed.push(a.ticker+' ('+err.message+')');}
+  }
+  try{localStorage.setItem(QUOTES_STORAGE,JSON.stringify(quoteCache));}catch(e){}
+  render();
+  const time=new Date().toLocaleString('fr-FR');
+  const msg=`${updated} cours actualisé(s) · ${time}`+(failed.length?` · Non trouvés : ${failed.join(', ')}`:'');
+  if(status)status.textContent=msg+' Les cours peuvent être différés et la source peut devenir indisponible.';
+  toast(updated?`${updated} cours actualisé(s).`:'Aucun cours n’a pu être actualisé.');
+ }finally{
+  quoteRefreshBusy=false;
+  if($('refreshQuotesBtn')){$('refreshQuotesBtn').disabled=false;$('refreshQuotesBtn').textContent='↻ Actualiser les cours';}
+  if($('refreshQuotesBtn2')){$('refreshQuotesBtn2').disabled=false;$('refreshQuotesBtn2').textContent='↻ Actualiser les cours';}
+ }
+}
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400)}
 function openModal(){ $('modalBack').classList.add('open');$('date').value=new Date().toISOString().slice(0,10);$('ticker').focus()}
 function closeModal(){$('modalBack').classList.remove('open')}
@@ -255,8 +343,14 @@ $('opForm').addEventListener('submit',e=>{
 });
 document.addEventListener('click',e=>{const b=e.target.closest('[data-delete]');if(b){const op=ops.find(o=>o.id===b.dataset.delete);if(op&&confirm(`Supprimer l'opération ${op.type} ${op.ticker} du ${op.date} ?`)){ops=ops.filter(o=>o.id!==op.id);save();render();toast('Opération supprimée')}}});
 $('accountFilter').addEventListener('change',render);$('posFilter').addEventListener('change',render);$('posSearch').addEventListener('input',render);$('opSearch').addEventListener('input',render);
+$('refreshQuotesBtn').addEventListener('click',refreshQuotes);$('refreshQuotesBtn2').addEventListener('click',refreshQuotes);
 document.querySelectorAll('[data-range]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-range]').forEach(x=>x.classList.toggle('active',x===b));range=b.dataset.range;renderLine(calc($('accountFilter').value));toast('Graphique indicatif actualisé')}));
 render();
 if(!storageAvailable) toast('Stockage local indisponible : les données ne seront pas conservées après fermeture.');
+// Mise à jour au chargement puis toutes les 15 minutes tant que la page reste ouverte.
+if(calc('all').arr.some(a=>String(a.kind||'').toUpperCase()!=='SCPI'&&String(a.account||'').toUpperCase()!=='SCPI')){
+ setTimeout(()=>refreshQuotes(),1800);
+ setInterval(()=>{if(!document.hidden)refreshQuotes();},15*60*1000);
+}
 </script>
 </body></html>
