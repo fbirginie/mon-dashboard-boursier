@@ -305,7 +305,7 @@ function yahooCandidates(a){
   'IE0002XZSHO1':['WPEA.PA','WPEA'],
   'XS2940466316':['IB1T.PA','IB1T.DE','IB1T'],
   'FR0011550185':['ESE.PA','ESE'],
-  'FR0000121329':['HO.PA','HO'],
+  'FR0000121329':['HO.PA'], // Thales : cotation principale Euronext Paris en EUR ; éviter le symbole ambigu HO sans suffixe.
   'IE00B6R52036':['ISOE.AS','IS0E.DE','IAUP.L','SPGP.L'],
   'FR0011871110':['PUST.PA','PUST'],
   'FR0013346681':['OBLI.PA','OBLI']
@@ -317,22 +317,61 @@ function yahooCandidates(a){
  return a.account==='PEA' ? [t+'.PA',t] : [t,t+'.PA'];
 }
 async function fetchYahooQuote(symbol){
- const target='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(symbol)+'?range=5d&interval=1d';
- // Yahoo n'autorise pas directement les appels depuis une page statique ; ce proxy public peut fonctionner sans clé, mais n'est pas garanti.
- const urls=[target,'https://proxy.cors.dev/'+target]; let lastError;
+ // Une fenêtre plus large permet un repli fiable si Yahoo ne renvoie pas chartPreviousClose.
+ const target='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(symbol)+'?range=5d&interval=1d&_='+Date.now();
+ // Yahoo n'autorise pas toujours les appels depuis une page statique ; ce proxy public peut fonctionner sans clé, mais n'est pas garanti.
+ const urls=['https://proxy.cors.dev/'+target,target]; let lastError;
  for(const url of urls){
   try{
    const response=await fetch(url,{cache:'no-store'});
    if(!response.ok) throw new Error('HTTP '+response.status);
    const json=await response.json(); const result=json?.chart?.result?.[0];
    if(!result) throw new Error(json?.chart?.error?.description||'Symbole introuvable');
-   const meta=result.meta||{}; const closes=result.indicators?.quote?.[0]?.close||[];
-   const validCloses=closes.map(Number).filter(v=>Number.isFinite(v)&&v>0);
-   const lastClose=validCloses.length?validCloses[validCloses.length-1]:null;
-   const previousClose=Number(meta.chartPreviousClose||meta.previousClose|| (validCloses.length>=2?validCloses[validCloses.length-2]:0));
-   const price=Number(meta.regularMarketPrice||lastClose);
-   if(!Number.isFinite(price)||price<=0) throw new Error('Cours indisponible');
-   return {price,previousClose:(Number.isFinite(previousClose)&&previousClose>0?previousClose:null),currency:meta.currency||'EUR',symbol:meta.symbol||symbol,name:meta.longName||meta.shortName||symbol,updatedAt:Date.now()};
+   const meta=result.meta||{}; const quote=result.indicators?.quote?.[0]||{};
+   const closes=quote.close||[], timestamps=result.timestamp||[];
+   const validRows=closes.map((v,i)=>({value:Number(v),ts:Number(timestamps[i])})).filter(r=>Number.isFinite(r.value)&&r.value>0&&Number.isFinite(r.ts));
+   const lastClose=validRows.length?validRows[validRows.length-1].value:null;
+   // Thales (FR0000121329) utilise exclusivement HO.PA pour éviter une cotation ambiguë.
+   // La clôture précédente doit être la dernière bougie quotidienne terminée,
+   // et non chartPreviousClose qui, sur une requête range=1mo, peut référencer
+   // la clôture précédant le début de la période téléchargée.
+   const metaPrevious=[meta.chartPreviousClose,meta.previousClose].map(Number).find(v=>Number.isFinite(v)&&v>0);
+   let derivedPrevious=null, previousCloseDate=null;
+   if(validRows.length){
+    const tz=meta.exchangeTimezoneName||'Europe/Paris';
+    // Format ISO explicite, indépendant de la locale du navigateur.
+    const dateInExchange=r=>{
+     const parts=new Intl.DateTimeFormat('en-GB',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(r.ts*1000));
+     const part=k=>parts.find(p=>p.type===k)?.value||'';
+     return `${part('year')}-${part('month')}-${part('day')}`;
+    };
+    const now=new Date();
+    const todayParts=new Intl.DateTimeFormat('en-GB',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now);
+    const todayPart=k=>todayParts.find(p=>p.type===k)?.value||'';
+    const exchangeToday=`${todayPart('year')}-${todayPart('month')}-${todayPart('day')}`;
+    const sortedRows=validRows.slice().sort((a,b)=>a.ts-b.ts);
+    // Choisir la dernière clôture réellement présente dans les bougies, pas la métadonnée
+    // chartPreviousClose (qui peut rester bloquée sur 228,00 € pour HO.PA).
+    // Si une bougie datée d'aujourd'hui existe avant la fin de séance, elle peut être incomplète :
+    // dans ce seul cas on prend l'avant-dernière bougie. Si la dernière bougie est datée d'hier
+    // ou d'une séance antérieure, on la retient même si l'horloge locale de l'ordinateur diffère.
+    let candidate=sortedRows.length?sortedRows[sortedRows.length-1]:null;
+    if(candidate && dateInExchange(candidate)===exchangeToday){
+      const parts=new Intl.DateTimeFormat('en-GB',{timeZone:tz,hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(now);
+      const part=k=>Number(parts.find(p=>p.type===k)?.value||0);
+      const minutes=part('hour')*60+part('minute');
+      const marketCloseMinutes=17*60+40; // Euronext Paris, marge après clôture officielle
+      if(minutes<marketCloseMinutes && sortedRows.length>=2) candidate=sortedRows[sortedRows.length-2];
+    }
+    if(candidate){derivedPrevious=candidate.value;previousCloseDate=dateInExchange(candidate);}
+   }
+   // Ne jamais préférer chartPreviousClose à une clôture quotidienne datée : cette métadonnée
+   // peut pointer vers la séance antérieure au début de la plage historique (ex. 228,00 € au lieu de 232,90 €).
+   const previousClose=derivedPrevious || metaPrevious;
+   const market=Number(meta.regularMarketPrice);
+   const price=Number.isFinite(market)&&market>0?market:lastClose;
+   if(!Number.isFinite(price)||price<=0) throw new Error('Cours actuel indisponible');
+   return {price,previousClose:(Number.isFinite(previousClose)&&previousClose>0?previousClose:null),previousCloseDate:previousCloseDate||null,currency:meta.currency||'EUR',symbol:meta.symbol||symbol,name:meta.longName||meta.shortName||symbol,updatedAt:Date.now()};
   }catch(err){lastError=err;}
  }
  throw lastError||new Error('Source indisponible');
@@ -366,7 +405,7 @@ async function refreshQuotes(){
     if(!(cur in fx))fx[cur]=await getFxRate(cur);
     const priceEUR=quote.price*fx[cur];
     if(!Number.isFinite(priceEUR)||priceEUR<=0)throw new Error('Conversion en EUR impossible');
-    quoteCache[key]={price:priceEUR,rawPrice:quote.price,previousCloseEUR:quote.previousClose?quote.previousClose*fx[cur]:null,rawPreviousClose:quote.previousClose||null,currency:cur,symbol:quote.symbol,source:'Yahoo Finance',updatedAt:Date.now()};
+    quoteCache[key]={price:priceEUR,rawPrice:quote.price,previousCloseEUR:quote.previousClose?quote.previousClose*fx[cur]:null,rawPreviousClose:quote.previousClose||null,previousCloseDate:quote.previousCloseDate||null,currency:cur,symbol:quote.symbol,source:'Yahoo Finance',updatedAt:Date.now()};
     updated++;
    }catch(err){failed.push(a.ticker+' ('+err.message+')');}
   }
@@ -374,7 +413,9 @@ async function refreshQuotes(){
   recordDailySnapshot();
   render();
   const time=new Date().toLocaleString('fr-FR');
-  const msg=`${updated} cours actualisé(s) · ${time}`+(failed.length?` · Non trouvés : ${failed.join(', ')}`:'');
+  const thales=Object.entries(quoteCache).find(([k,v])=>k.split('|')[1]==='FR0000121329'||String(v.symbol||'').toUpperCase()==='HO.PA');
+  const thalesInfo=thales&&thales[1].previousCloseEUR?` · Thales clôture précédente : ${Number(thales[1].previousCloseEUR).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})} € (${thales[1].previousCloseDate||'date inconnue'})`:'';
+  const msg=`${updated} cours actualisé(s) · clôtures précédentes recalculées · ${time}`+thalesInfo+(failed.length?` · Échec : ${failed.join(', ')}`:'');
   if(status)status.textContent=msg+' Les cours peuvent être différés et la source peut devenir indisponible.';
   toast(updated?`${updated} cours actualisé(s).`:'Aucun cours n’a pu être actualisé.');
  }finally{
