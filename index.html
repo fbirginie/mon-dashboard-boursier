@@ -20,6 +20,7 @@
     <button data-page="scpi"><span class="ico">⌂</span>Mes SCPI</button>
     <button data-page="operations"><span class="ico">↔</span>Opérations</button>
     <button data-page="analyses"><span class="ico">◷</span>Analyses</button>
+    <button data-page="performance"><span class="ico">↕</span>Performance du jour</button>
   </nav></div>
   <div class="sidefoot"><div style="font-weight:700;color:#fff;margin-bottom:5px">Cours actualisables</div>Les opérations et les cours restent enregistrés dans ce navigateur. Exporte régulièrement une sauvegarde.</div>
 </aside>
@@ -33,12 +34,26 @@
       <div class="card"><div class="metric-top"><span>Dividendes nets saisis</span><span class="metric-icon">＄</span></div><div class="value" id="divValue">0,00 €</div><div class="foot">Revenus enregistrés</div></div>
     </div>
     <div class="grid main-grid">
-      <div class="card"><div class="card-head"><div><div class="card-title">Évolution du portefeuille</div><div class="card-sub">Historique indicatif à partir des données saisies</div></div><div class="range"><button class="active" data-range="1M">1M</button><button data-range="6M">6M</button><button data-range="1A">1A</button><button data-range="ALL">Tout</button></div></div><div class="chartbox" id="lineChart"></div><div class="chart-labels"><span>Début de période</span><span>Dernière opération</span></div><div class="legend"><span><i class="dot" style="background:#4263eb"></i>Valeur estimée</span><span><i class="dot" style="background:#aebcff"></i>Montant investi net</span></div><div class="notice">Le graphique est une estimation reconstituée à partir des opérations, pas une cotation historique réelle.</div></div>
+      <div class="card"><div class="card-head"><div><div class="card-title">Évolution du portefeuille</div><div class="card-sub">Reconstitution à partir des cours historiques et de tes dates d’achat/vente</div></div><button class="btn" id="rebuildHistoryBtn">↻ Reconstituer l’historique</button><div class="range"><button class="active" data-range="1M">1M</button><button data-range="6M">6M</button><button data-range="1A">1A</button><button data-range="ALL">Tout</button></div></div><div class="chartbox" id="lineChart"></div><div class="chart-labels" id="chartLabels"><span>Début de période</span><span>Dernière opération</span></div><div class="legend" id="chartLegend"><span><i class="dot" style="background:#4263eb"></i>Valeur historique reconstituée</span></div><div class="notice">La reconstitution utilise les cours de clôture historiques disponibles et applique les quantités issues de tes achats/ventes à chaque date. Les actifs sans historique (notamment SCPI) sont évalués au dernier prix manuel connu. Les devises étrangères sont converties au taux actuel : leur valeur passée reste donc approximative.</div></div>
       <div class="card"><div class="card-head"><div><div class="card-title">Allocation des actifs</div><div class="card-sub">Répartition par type d'instrument</div></div><span class="pill neutral" id="assetCount">0 actifs</span></div><div class="allocation"><div class="donut" id="donut"></div><div class="alloc-legend" id="allocLegend"></div></div><div class="notice">La répartition utilise les cours actuels que tu as saisis pour chaque ligne.</div></div>
     </div>
     <div class="card table-card"><div class="card-head"><div><div class="card-title">Principales positions</div><div class="card-sub">Tes lignes détenues, tous comptes confondus selon le filtre</div></div><button class="btn" data-goto="positions">Voir tout →</button></div><div class="table-wrap"><table><thead><tr><th>ACTIF</th><th>COMPTE</th><th>QUANTITÉ</th><th>COURS</th><th>VALEUR</th><th>GAIN / PERTE</th></tr></thead><tbody id="topPositions"></tbody></table></div></div>
     <div class="grid bottom-grid" style="margin-top:17px"><div class="card"><div class="card-head"><div><div class="card-title">Dernières opérations</div><div class="card-sub">Historique récent de ton activité</div></div><button class="btn" data-goto="operations">Tout voir →</button></div><div class="activity" id="recentOps"></div></div><div class="card"><div class="card-head"><div><div class="card-title">Points d'attention</div><div class="card-sub">Indicateurs calculés à partir de tes saisies</div></div></div><div class="activity" id="insights"></div></div></div>
     <div class="notice" id="quoteStatus" role="status">Cours automatiques non actualisés dans cette session. Clique sur « Actualiser les cours » pour récupérer les dernières cotations disponibles.</div><div class="footer-note">Outil de suivi personnel à visée informative. Les calculs sont indicatifs et ne constituent pas un conseil en investissement ou fiscal.</div>
+  </section>
+  <section id="performance" class="section">
+    <div class="top"><div><div class="eyebrow">SUIVI QUOTIDIEN</div><h1 class="h1">Performance du jour</h1><div class="sub">Compare les derniers cours disponibles à la clôture précédente, sans base de données.</div></div><div class="actions"><button class="btn primary" id="refreshDailyBtn">↻ Actualiser et recalculer</button></div></div>
+    <div class="grid metrics">
+      <div class="card"><div class="metric-top"><span>Variation estimée du jour</span><span class="metric-icon">↕</span></div><div class="value" id="dailyChange">—</div><div class="foot" id="dailyChangeFoot">Sur les lignes avec historique de cours disponible</div></div>
+      <div class="card"><div class="metric-top"><span>Portefeuille couvert</span><span class="metric-icon">◈</span></div><div class="value" id="dailyCoverage">—</div><div class="foot" id="dailyCoverageFoot">Part de la valeur totale comparable</div></div>
+      <div class="card"><div class="metric-top"><span>Positions en hausse</span><span class="metric-icon">↗</span></div><div class="value" id="dailyUp">—</div><div class="foot">Par rapport à la clôture précédente</div></div>
+      <div class="card"><div class="metric-top"><span>Positions en baisse</span><span class="metric-icon">↘</span></div><div class="value" id="dailyDown">—</div><div class="foot">Par rapport à la clôture précédente</div></div>
+    </div>
+    <div class="card table-card">
+      <div class="card-head"><div><div class="card-title">Détail par ligne</div><div class="card-sub">Impact estimé sur la valeur détenue. Les SCPI et les cours sans clôture précédente ne sont pas inclus dans le total.</div></div></div>
+      <div class="table-wrap"><table><thead><tr><th>Actif</th><th>Compte</th><th>Dernier cours</th><th>Clôture précédente</th><th>Variation</th><th>Impact sur la ligne</th></tr></thead><tbody id="dailyRows"><tr><td colspan="6" class="empty">Actualise les cours pour calculer la performance.</td></tr></tbody></table></div>
+    </div>
+    <div class="notice">Estimation indicative : elle compare les quantités actuellement détenues aux derniers cours disponibles et à la clôture précédente. Elle ne tient pas compte des achats/ventes de la journée, des dividendes, des frais ni des versements/retraits. Les cours peuvent être différés. Les données sont conservées dans le stockage local de ce navigateur ; exporte régulièrement une sauvegarde CSV.</div>
   </section>
   <section id="positions" class="section">
     <div class="top"><div><div class="eyebrow">PORTEFEUILLE</div><h1 class="h1">Mes positions</h1><div class="sub">Gère les cours, quantités et types d'actifs.</div></div><div class="actions"><select class="select" id="posFilter"><option value="all">Tous les comptes</option><option>PEA</option><option>CTO</option><option>SCPI</option></select><button class="btn" id="refreshQuotesBtn2">↻ Actualiser les cours</button><button class="btn primary" id="addBtn2">＋ Ajouter une opération</button></div></div>
@@ -88,6 +103,14 @@ try {
 }
 let range='1M';
 const QUOTES_STORAGE='patrimoine_dashboard_quotes_v1';
+const SNAPSHOTS_STORAGE='patrimoine_dashboard_daily_snapshots_v1';
+const HISTORICAL_STORAGE='patrimoine_dashboard_historical_prices_v1';
+let historicalPortfolio=[];
+try{historicalPortfolio=JSON.parse(localStorage.getItem('patrimoine_dashboard_historical_portfolio_v1')||'[]')||[];}catch(e){historicalPortfolio=[];}
+let historicalPrices={};
+try{historicalPrices=JSON.parse(localStorage.getItem(HISTORICAL_STORAGE)||'{}')||{};}catch(e){historicalPrices={};}
+let dailySnapshots=[];
+try { dailySnapshots=JSON.parse(localStorage.getItem(SNAPSHOTS_STORAGE)||'[]')||[]; if(!Array.isArray(dailySnapshots))dailySnapshots=[]; } catch(e) { dailySnapshots=[]; }
 let quoteCache={};
 try { quoteCache=JSON.parse(localStorage.getItem(QUOTES_STORAGE)||'{}')||{}; } catch(e) { quoteCache={}; }
 let quoteRefreshBusy=false;
@@ -146,16 +169,66 @@ function calc(account='all'){
 function setMoney(id,n){$(id).textContent=euro(n);$(id).classList.toggle('positive',n>0);$(id).classList.toggle('negative',n<0)}
 function tablePosition(a,wide=false){return `<tr><td><div class="asset"><div class="ticker">${esc(a.ticker.slice(0,4))}</div><div><div class="asset-name">${esc(a.name)}</div><div class="asset-sub">${esc(a.ticker)} · ${esc(a.kind)}</div></div></div></td><td><span class="account-tag">${esc(a.account)}</span></td>${wide?`<td>${esc(a.kind)}</td>`:''}<td>${num(a.qty)}</td>${wide?`<td>${euro(a.avg)}</td>`:''}<td>${euro(a.price)}</td><td><strong>${euro(a.value)}</strong></td><td class="${a.pnl>=0?'positive':'negative'}">${euro(a.pnl)} <span style="color:#9aa4b6">(${a.cost?pct(a.pnl/a.cost*100):'—'})</span></td></tr>`}
 function emptyRow(cols,msg='Aucune position. Ajoute ton premier achat pour commencer.') {return `<tr><td colspan="${cols}"><div class="empty">${msg}</div></td></tr>`}
+function recordDailySnapshot(){
+  // Un relevé par jour : actualisé à chaque rafraîchissement, sans inventer de valeurs passées.
+  const c=calc('all');
+  if(!c.arr.length) return;
+  const date=new Date().toISOString().slice(0,10);
+  const snap={date,value:c.value,invested:c.investedNet,positions:c.arr.length,recordedAt:Date.now()};
+  const idx=dailySnapshots.findIndex(x=>x.date===date);
+  if(idx>=0) dailySnapshots[idx]=snap; else dailySnapshots.push(snap);
+  dailySnapshots.sort((a,b)=>a.date.localeCompare(b.date));
+  if(dailySnapshots.length>2000)dailySnapshots=dailySnapshots.slice(-2000);
+  try{localStorage.setItem(SNAPSHOTS_STORAGE,JSON.stringify(dailySnapshots));}catch(e){toast('Impossible de sauvegarder le relevé quotidien dans le stockage local.');}
+}
 function renderLine(c){
- const el=$('lineChart'); if(!c.arr.length){el.innerHTML='<div class="empty" style="padding-top:65px">Ajoute des opérations et renseigne les cours pour voir ton graphique.</div>';return}
- const total=c.value, invested=c.cost;let vals;
- const seed=Math.max(1,Math.round(total/20));vals=Array.from({length:28},(_,i)=>{let t=i/27;return Math.max(0,invested*(.85+.15*t)+(total-invested)*t+(Math.sin(i*1.7)*seed*.12))});vals[27]=total;
- const max=Math.max(...vals,total,invested,1)*1.12,min=Math.min(...vals,invested)*.88;
- const x=i=>8+i*3.35,y=v=>190-(v-min)/(max-min||1)*170;
- let path=vals.map((v,i)=>`${i?'L':'M'} ${x(i)} ${y(v)}`).join(' ');
- let area=path+` L ${x(27)} 195 L ${x(0)} 195 Z`;
- let grid=[.15,.45,.75].map(t=>`<line x1="7" x2="99" y1="${195-t*170}" y2="${195-t*170}" stroke="#edf0f5" stroke-dasharray="1 2"/>`).join('');
- el.innerHTML=`<svg viewBox="0 0 100 200" preserveAspectRatio="none" aria-label="Graphique estimé"><defs><linearGradient id="fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#4263eb" stop-opacity=".2"/><stop offset="1" stop-color="#4263eb" stop-opacity="0"/></linearGradient></defs>${grid}<path d="${area}" fill="url(#fill)"/><path d="${path}" fill="none" stroke="#4263eb" stroke-width="1.8" vector-effect="non-scaling-stroke"/><line x1="8" x2="99" y1="${y(invested)}" y2="${y(invested)}" stroke="#aebcff" stroke-width="1.4" stroke-dasharray="4 3" vector-effect="non-scaling-stroke"/><circle cx="98" cy="${y(total)}" r="2.2" fill="#4263eb" vector-effect="non-scaling-stroke"/></svg>`;
+ const el=$('lineChart');
+ const account=$('accountFilter')?.value||'all';
+ // Les relevés quotidiens sont enregistrés pour le portefeuille complet. Un filtre de compte
+ // ne peut donc pas prétendre afficher un historique exact par compte.
+ if(account!=='all'){
+   el.innerHTML='<div class="empty" style="padding-top:48px">L’historique réel est enregistré pour le portefeuille complet. Choisis « Tous les comptes » pour afficher les relevés quotidiens.</div>';
+   if($('chartLabels'))$('chartLabels').innerHTML='<span>—</span><span>—</span>';
+   return;
+ }
+ if(historicalPortfolio.length){
+   if($('chartLegend'))$('chartLegend').innerHTML='<span><i class="dot" style="background:#4263eb"></i>Valeur historique reconstituée</span>';
+   const cutoff=new Date(); if(range!=='ALL'){const months=range==='1M'?1:range==='6M'?6:12;cutoff.setMonth(cutoff.getMonth()-months)}
+   let visible=range==='ALL'?historicalPortfolio.slice():historicalPortfolio.filter(p=>new Date(p.date+'T12:00:00')>=cutoff);
+   if(!visible.length)visible=[historicalPortfolio[historicalPortfolio.length-1]];
+   const allVals=visible.map(p=>Number(p.value)||0); let min=Math.min(0,...allVals),max=Math.max(1,...allVals);if(max===min)max=min+1;
+   const x=i=>visible.length===1?50:8+i*91/(visible.length-1), y=v=>184-(v-min)/(max-min)*160;
+   const smoothPath=(points)=>{if(points.length<3)return points.map((p,i)=>`${i?'L':'M'} ${p.x} ${p.y}`).join(' ');let d=`M ${points[0].x} ${points[0].y}`;for(let i=0;i<points.length-1;i++){const p0=points[Math.max(0,i-1)],p1=points[i],p2=points[i+1],p3=points[Math.min(points.length-1,i+2)];const c1x=p1.x+(p2.x-p0.x)/6,c1y=p1.y+(p2.y-p0.y)/6,c2x=p2.x-(p3.x-p1.x)/6,c2y=p2.y-(p3.y-p1.y)/6;d+=` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p2.x} ${p2.y}`;}return d;};
+   const points=visible.map((p,i)=>({x:x(i),y:y(Number(p.value)||0)}));
+   const path=smoothPath(points);
+   const area=path+` L ${x(visible.length-1)} 188 L ${x(0)} 188 Z`;
+   const grid=[.25,.5,.75].map(t=>`<line x1="7" x2="99" y1="${184-t*160}" y2="${184-t*160}" stroke="#edf0f5" stroke-dasharray="1 2"/>`).join('');
+   const last=visible[visible.length-1];
+   el.innerHTML=`<svg viewBox="0 0 100 200" preserveAspectRatio="none" aria-label="Valeur historique reconstituée"><defs><linearGradient id="fillHist" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#4263eb" stop-opacity=".18"/><stop offset="1" stop-color="#4263eb" stop-opacity="0"/></linearGradient></defs>${grid}<path d="${area}" fill="url(#fillHist)"/><path d="${path}" fill="none" stroke="#4263eb" stroke-width="1.8" vector-effect="non-scaling-stroke"/></svg>`;
+   if($('chartLabels'))$('chartLabels').innerHTML=`<span>${esc(visible[0].date)} · ${euro(visible[0].value)}</span><span>${esc(last.date)} · ${euro(last.value)}</span>`;
+   return;
+ }
+ if($('chartLegend'))$('chartLegend').innerHTML='<span><i class="dot" style="background:#4263eb"></i>Valeur enregistrée</span><span><i class="dot" style="background:#aebcff"></i>Capital net engagé</span>';
+ if(!dailySnapshots.length){
+   el.innerHTML='<div class="empty" style="padding-top:42px">Aucun relevé historique enregistré pour le moment. Actualise les cours pour enregistrer la première valeur réelle du portefeuille. Les relevés s’accumuleront à partir d’aujourd’hui.</div>';
+   if($('chartLabels'))$('chartLabels').innerHTML='<span>Premier relevé à venir</span><span>—</span>';
+   return;
+ }
+ const cutoff=new Date();
+ if(range!=='ALL'){const months=range==='1M'?1:range==='6M'?6:12;cutoff.setMonth(cutoff.getMonth()-months)}
+ let visible=range==='ALL'?dailySnapshots.slice():dailySnapshots.filter(p=>new Date(p.date+'T12:00:00')>=cutoff);
+ if(!visible.length)visible=[dailySnapshots[dailySnapshots.length-1]];
+ const allVals=visible.flatMap(p=>[Number(p.value)||0,Number(p.invested)||0]);
+ let min=Math.min(0,...allVals),max=Math.max(1,...allVals);if(max===min)max=min+1;
+ const x=i=>visible.length===1?50:8+i*91/(visible.length-1), y=v=>184-(v-min)/(max-min)*160;
+ const smoothPath=(points)=>{if(points.length<3)return points.map((p,i)=>`${i?'L':'M'} ${p.x} ${p.y}`).join(' ');let d=`M ${points[0].x} ${points[0].y}`;for(let i=0;i<points.length-1;i++){const p0=points[Math.max(0,i-1)],p1=points[i],p2=points[i+1],p3=points[Math.min(points.length-1,i+2)];const c1x=p1.x+(p2.x-p0.x)/6,c1y=p1.y+(p2.y-p0.y)/6,c2x=p2.x-(p3.x-p1.x)/6,c2y=p2.y-(p3.y-p1.y)/6;d+=` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p2.x} ${p2.y}`;}return d;};
+ const pathFor=k=>smoothPath(visible.map((p,i)=>({x:x(i),y:y(Number(p[k])||0)})));
+ const valuePath=pathFor('value'), investedPath=pathFor('invested');
+ const area=valuePath+` L ${x(visible.length-1)} 188 L ${x(0)} 188 Z`;
+ const grid=[.25,.5,.75].map(t=>`<line x1="7" x2="99" y1="${184-t*160}" y2="${184-t*160}" stroke="#edf0f5" stroke-dasharray="1 2"/>`).join('');
+ const last=visible[visible.length-1];
+ el.innerHTML=`<svg viewBox="0 0 100 200" preserveAspectRatio="none" aria-label="Historique des valeurs réellement enregistrées"><defs><linearGradient id="fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#4263eb" stop-opacity=".18"/><stop offset="1" stop-color="#4263eb" stop-opacity="0"/></linearGradient></defs>${grid}<path d="${area}" fill="url(#fill)"/><path d="${valuePath}" fill="none" stroke="#4263eb" stroke-width="1.8" vector-effect="non-scaling-stroke"/>${visible.length>1?`<path d="${investedPath}" fill="none" stroke="#aebcff" stroke-width="1.4" stroke-dasharray="4 3" vector-effect="non-scaling-stroke"/>`:''}</svg>`;
+ if($('chartLabels'))$('chartLabels').innerHTML=`<span>${esc(visible[0].date)}</span><span>${esc(last.date)} · ${euro(last.value)}</span>`;
 }
 function renderDonut(c){
  const types={};c.arr.forEach(a=>types[a.kind]=(types[a.kind]||0)+a.value);
@@ -174,7 +247,27 @@ function scpiDistributions12m(){
  const cutoff=new Date();cutoff.setMonth(cutoff.getMonth()-12);const dateCutoff=cutoff.toISOString().slice(0,10);
  return ops.filter(o=>o.type==='Dividende' && (o.kind==='SCPI' || o.account==='SCPI') && (o.date||'')>=dateCutoff).reduce((sum,o)=>sum+(Number(o.price)||0)*(Number(o.qty)||1)-(Number(o.fees)||0),0);
 }
+function renderDailyPerformance(){
+ const all=calc('all').arr;
+ const comparable=all.filter(a=>String(a.kind||'').toUpperCase()!=='SCPI'&&String(a.account||'').toUpperCase()!=='SCPI'&&Number(quoteCache[String(a.account||'')+'|'+String(a.ticker||'').trim().toUpperCase()]?.previousCloseEUR)>0);
+ const totalValue=all.reduce((sum,a)=>sum+a.value,0);
+ const coveredValue=comparable.reduce((sum,a)=>sum+a.value,0);
+ const rows=comparable.map(a=>{
+   const q=quoteCache[String(a.account||'')+'|'+String(a.ticker||'').trim().toUpperCase()];
+   const prev=Number(q.previousCloseEUR), change=prev?((a.price-prev)/prev*100):0, impact=(a.price-prev)*a.qty;
+   return {...a,prev,change,impact};
+ }).sort((a,b)=>b.impact-a.impact);
+ const daily=rows.reduce((sum,a)=>sum+a.impact,0);
+ setMoney('dailyChange',daily);
+ $('dailyChangeFoot').textContent=rows.length?`${pct(coveredValue?daily/rows.reduce((sum,a)=>sum+a.prev*a.qty,0)*100:0)} sur les lignes couvertes`:'Actualise les cours pour obtenir une comparaison';
+ $('dailyCoverage').textContent=totalValue?`${(coveredValue/totalValue*100).toLocaleString('fr-FR',{maximumFractionDigits:1})} %`:'—';
+ $('dailyCoverageFoot').textContent=`${euro(coveredValue)} sur ${euro(totalValue)} de portefeuille`;
+ $('dailyUp').textContent=String(rows.filter(a=>a.change>0.0001).length);
+ $('dailyDown').textContent=String(rows.filter(a=>a.change< -0.0001).length);
+ $('dailyRows').innerHTML=rows.length?rows.map(a=>`<tr><td><div class="asset"><div class="ticker">${esc(a.ticker.slice(0,4))}</div><div><div class="asset-name">${esc(a.name)}</div><div class="asset-sub">${esc(a.ticker)} · ${esc(a.kind)}</div></div></div></td><td><span class="account-tag">${esc(a.account)}</span></td><td>${euro(a.price)}</td><td>${euro(a.prev)}</td><td class="${a.change>=0?'positive':'negative'}">${pct(a.change)}</td><td class="${a.impact>=0?'positive':'negative'}">${euro(a.impact)}</td></tr>`).join(''):'<tr><td colspan="6" class="empty">Aucune clôture précédente disponible. Clique sur « Actualiser et recalculer » ; les SCPI ne sont pas comparées automatiquement.</td></tr>';
+}
 function render(){
+ renderDailyPerformance();
  const account=$('accountFilter')?.value||'all',c=calc(account);
  setMoney('totalValue',c.value);setMoney('investedValue',c.cost);setMoney('pnlValue',c.pnl);setMoney('divValue',c.div);
  $('pnlFoot').textContent=c.cost?`${pct(c.returnPct)} sur le coût restant des positions`:'Sur les positions ouvertes';
@@ -224,7 +317,7 @@ function yahooCandidates(a){
  return a.account==='PEA' ? [t+'.PA',t] : [t,t+'.PA'];
 }
 async function fetchYahooQuote(symbol){
- const target='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(symbol)+'?range=1d&interval=1d';
+ const target='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(symbol)+'?range=5d&interval=1d';
  // Yahoo n'autorise pas directement les appels depuis une page statique ; ce proxy public peut fonctionner sans clé, mais n'est pas garanti.
  const urls=[target,'https://proxy.cors.dev/'+target]; let lastError;
  for(const url of urls){
@@ -234,10 +327,12 @@ async function fetchYahooQuote(symbol){
    const json=await response.json(); const result=json?.chart?.result?.[0];
    if(!result) throw new Error(json?.chart?.error?.description||'Symbole introuvable');
    const meta=result.meta||{}; const closes=result.indicators?.quote?.[0]?.close||[];
-   const lastClose=[...closes].reverse().find(v=>Number.isFinite(Number(v))&&Number(v)>0);
+   const validCloses=closes.map(Number).filter(v=>Number.isFinite(v)&&v>0);
+   const lastClose=validCloses.length?validCloses[validCloses.length-1]:null;
+   const previousClose=Number(meta.chartPreviousClose||meta.previousClose|| (validCloses.length>=2?validCloses[validCloses.length-2]:0));
    const price=Number(meta.regularMarketPrice||lastClose);
    if(!Number.isFinite(price)||price<=0) throw new Error('Cours indisponible');
-   return {price,currency:meta.currency||'EUR',symbol:meta.symbol||symbol,name:meta.longName||meta.shortName||symbol,updatedAt:Date.now()};
+   return {price,previousClose:(Number.isFinite(previousClose)&&previousClose>0?previousClose:null),currency:meta.currency||'EUR',symbol:meta.symbol||symbol,name:meta.longName||meta.shortName||symbol,updatedAt:Date.now()};
   }catch(err){lastError=err;}
  }
  throw lastError||new Error('Source indisponible');
@@ -271,11 +366,12 @@ async function refreshQuotes(){
     if(!(cur in fx))fx[cur]=await getFxRate(cur);
     const priceEUR=quote.price*fx[cur];
     if(!Number.isFinite(priceEUR)||priceEUR<=0)throw new Error('Conversion en EUR impossible');
-    quoteCache[key]={price:priceEUR,rawPrice:quote.price,currency:cur,symbol:quote.symbol,source:'Yahoo Finance',updatedAt:Date.now()};
+    quoteCache[key]={price:priceEUR,rawPrice:quote.price,previousCloseEUR:quote.previousClose?quote.previousClose*fx[cur]:null,rawPreviousClose:quote.previousClose||null,currency:cur,symbol:quote.symbol,source:'Yahoo Finance',updatedAt:Date.now()};
     updated++;
    }catch(err){failed.push(a.ticker+' ('+err.message+')');}
   }
   try{localStorage.setItem(QUOTES_STORAGE,JSON.stringify(quoteCache));}catch(e){}
+  recordDailySnapshot();
   render();
   const time=new Date().toLocaleString('fr-FR');
   const msg=`${updated} cours actualisé(s) · ${time}`+(failed.length?` · Non trouvés : ${failed.join(', ')}`:'');
@@ -286,6 +382,57 @@ async function refreshQuotes(){
   if($('refreshQuotesBtn')){$('refreshQuotesBtn').disabled=false;$('refreshQuotesBtn').textContent='↻ Actualiser les cours';}
   if($('refreshQuotesBtn2')){$('refreshQuotesBtn2').disabled=false;$('refreshQuotesBtn2').textContent='↻ Actualiser les cours';}
  }
+}
+async function fetchYahooHistory(symbol,startDate){
+ const start=Math.floor(new Date((startDate||'2000-01-01')+'T00:00:00Z').getTime()/1000)-86400;
+ const end=Math.floor(Date.now()/1000)+86400;
+ const target='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(symbol)+'?period1='+start+'&period2='+end+'&interval=1d&events=div%2Csplits';
+ let err;
+ for(const url of ['https://proxy.cors.dev/'+target,target]){try{const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();const res=j?.chart?.result?.[0];if(!res)throw new Error(j?.chart?.error?.description||'Historique indisponible');const timestamps=res.timestamp||[], closes=res.indicators?.quote?.[0]?.close||[];const prices={};timestamps.forEach((ts,i)=>{const v=Number(closes[i]);if(Number.isFinite(v)&&v>0)prices[new Date(ts*1000).toISOString().slice(0,10)]=v;});if(!Object.keys(prices).length)throw new Error('Aucun cours quotidien');return {prices,currency:String(res.meta?.currency||'EUR').toUpperCase(),symbol:res.meta?.symbol||symbol};}catch(e){err=e;}}
+ throw err||new Error('Source historique indisponible');
+}
+async function rebuildHistoricalPortfolio(){
+ const btn=$('rebuildHistoryBtn');if(btn){btn.disabled=true;btn.textContent='Chargement des historiques…';}
+ try{
+  if(!ops.length){toast('Ajoute des opérations avant de reconstituer l’historique.');return;}
+  const sorted=ops.slice().sort((a,b)=>(a.date||'').localeCompare(b.date||'')||(Number(a.created)||0)-(Number(b.created)||0));
+  const firstDate=sorted.find(o=>o.date)?.date||new Date().toISOString().slice(0,10);
+  const endDate=new Date().toISOString().slice(0,10);
+  const instruments={};
+  sorted.forEach(o=>{if(!o.ticker||['Dividende','Frais'].includes(o.type))return;const key=String(o.account||'')+'|'+String(o.ticker).trim().toUpperCase();if(!instruments[key])instruments[key]={key,ticker:String(o.ticker).trim().toUpperCase(),account:o.account,kind:o.kind||'',ops:[],name:o.name||o.ticker};instruments[key].ops.push(o);if(o.name)instruments[key].name=o.name;if(o.kind)instruments[key].kind=o.kind;});
+  const status=$('quoteStatus');if(status)status.textContent='Téléchargement des cours historiques…';
+  const fxCache={EUR:1};let success=0,fail=[];
+  for(const inst of Object.values(instruments)){
+   const isScpi=String(inst.kind).toUpperCase()==='SCPI'||String(inst.account).toUpperCase()==='SCPI';
+   if(isScpi){success++;continue;}
+   let result=null,lastErr=null;
+   for(const sym of yahooCandidates(inst)){
+    try{result=await fetchYahooHistory(sym,inst.ops[0]?.date||firstDate);break;}catch(e){lastErr=e;}
+   }
+   if(!result){fail.push(inst.ticker);continue;}
+   try{if(!(result.currency in fxCache))fxCache[result.currency]=await getFxRate(result.currency);}catch(e){fxCache[result.currency]=null;}
+   historicalPrices[inst.key]={...result,fx:fxCache[result.currency],fetchedAt:Date.now()};success++;
+  }
+  // Compose a daily calendar from the first transaction to today, applying operations in chronological order.
+  const daySet=new Set([firstDate,endDate]);
+  Object.values(historicalPrices).forEach(h=>Object.keys(h.prices||{}).forEach(d=>{if(d>=firstDate&&d<=endDate)daySet.add(d);}));
+  sorted.forEach(o=>{if(o.date>=firstDate&&o.date<=endDate)daySet.add(o.date);});
+  const days=[...daySet].sort();const state={};let oi=0;historicalPortfolio=[];
+  for(const day of days){
+   while(oi<sorted.length&&sorted[oi].date<=day){const o=sorted[oi++],key=String(o.account||'')+'|'+String(o.ticker||'').trim().toUpperCase();if(!state[key])state[key]={qty:0,manualPrice:0,account:o.account,ticker:String(o.ticker||'').trim().toUpperCase(),kind:o.kind||'',name:o.name||o.ticker};const a=state[key],qty=Number(o.qty)||0,price=Number(o.price)||0;if(o.type==='Achat'){a.qty+=qty;if((String(a.kind).toUpperCase()==='SCPI'||String(a.account).toUpperCase()==='SCPI')&&price>0&&!a.manualPrice)a.manualPrice=price;}else if(o.type==='Vente')a.qty=Math.max(0,a.qty-qty);else if(o.type==='Mise à jour du cours')a.manualPrice=price;if(o.kind)a.kind=o.kind;if(o.name)a.name=o.name;}
+   let total=0,covered=0,lines=0;
+   for(const [key,a] of Object.entries(state)){if(a.qty<=0.0000001)continue;const hist=historicalPrices[key];let price=a.manualPrice;let isCovered=false;
+    if(hist&&hist.prices){const dates=Object.keys(hist.prices).filter(d=>d<=day).sort();if(dates.length){const raw=hist.prices[dates[dates.length-1]],fx=Number(hist.fx);if(Number.isFinite(fx)&&fx>0){price=raw*fx;isCovered=true;}}}
+    if(!price){const q=quoteCache[key];if(q&&Number(q.price)>0)price=Number(q.price);}
+    if(price>0){total+=a.qty*price;lines++;if(isCovered)covered+=a.qty*price;}
+   }
+   if(total>0)historicalPortfolio.push({date:day,value:total,coveredValue:covered,lines});
+  }
+  try{localStorage.setItem(HISTORICAL_STORAGE,JSON.stringify(historicalPrices));localStorage.setItem('patrimoine_dashboard_historical_portfolio_v1',JSON.stringify(historicalPortfolio));}catch(e){toast('Historique calculé, mais stockage local insuffisant.');}
+  render();if(status)status.textContent=`Historique reconstitué : ${historicalPortfolio.length} dates · ${success} actifs traités`+(fail.length?` · cours introuvables : ${fail.join(', ')}`:'');
+  toast(`Historique reconstitué (${historicalPortfolio.length} dates).`);
+ }catch(e){toast('Impossible de reconstituer l’historique : '+(e.message||'erreur'));}
+ finally{if(btn){btn.disabled=false;btn.textContent='↻ Reconstituer l’historique';}}
 }
 function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2400)}
 function openModal(){ $('modalBack').classList.add('open');$('date').value=new Date().toISOString().slice(0,10);$('ticker').focus()}
@@ -344,7 +491,8 @@ $('opForm').addEventListener('submit',e=>{
 });
 document.addEventListener('click',e=>{const b=e.target.closest('[data-delete]');if(b){const op=ops.find(o=>o.id===b.dataset.delete);if(op&&confirm(`Supprimer l'opération ${op.type} ${op.ticker} du ${op.date} ?`)){ops=ops.filter(o=>o.id!==op.id);save();render();toast('Opération supprimée')}}});
 $('accountFilter').addEventListener('change',render);$('posFilter').addEventListener('change',render);$('posSearch').addEventListener('input',render);$('opSearch').addEventListener('input',render);
-$('refreshQuotesBtn').addEventListener('click',refreshQuotes);$('refreshQuotesBtn2').addEventListener('click',refreshQuotes);
+$('rebuildHistoryBtn')?.addEventListener('click',rebuildHistoricalPortfolio);
+$('refreshQuotesBtn').addEventListener('click',refreshQuotes);$('refreshQuotesBtn2').addEventListener('click',refreshQuotes);$('refreshDailyBtn').addEventListener('click',refreshQuotes);
 document.querySelectorAll('[data-range]').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('[data-range]').forEach(x=>x.classList.toggle('active',x===b));range=b.dataset.range;renderLine(calc($('accountFilter').value));toast('Graphique indicatif actualisé')}));
 render();
 if(!storageAvailable) toast('Stockage local indisponible : les données ne seront pas conservées après fermeture.');
